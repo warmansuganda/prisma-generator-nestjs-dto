@@ -1,6 +1,6 @@
 import { DMMF } from '@prisma/generator-helper';
 import { IClassValidator, ParsedField } from './types';
-import { isType } from './field-classifiers';
+import { isRelation, isType } from './field-classifiers';
 
 const validatorsWithoutParams = [
   'IsEmpty',
@@ -189,7 +189,7 @@ function optEach(validator: IClassValidator, isList: boolean): void {
  */
 export function parseClassValidators(
   field: DMMF.Field,
-  dtoName?: (name: string) => string,
+  dtoName?: string | ((name: string) => string),
 ): IClassValidator[] {
   const validators: IClassValidator[] = [];
 
@@ -203,13 +203,19 @@ export function parseClassValidators(
     validators.push({ name: 'IsArray' });
   }
 
-  if (isType(field)) {
+  if (isType(field) || isRelation(field)) {
     const nestedValidator: IClassValidator = { name: 'ValidateNested' };
     optEach(nestedValidator, field.isList);
     validators.push(nestedValidator);
     validators.push({
       name: 'Type',
-      value: `() => ${dtoName ? dtoName(field.type) : field.type}`,
+      value: `() => ${
+        dtoName
+          ? typeof dtoName === 'string'
+            ? dtoName
+            : dtoName(field.type)
+          : field.type
+      }`,
     });
   } else {
     const typeValidator = scalarToValidator(field.type);

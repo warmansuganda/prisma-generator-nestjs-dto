@@ -18,6 +18,7 @@ import type {
   ParsedField,
 } from './types';
 import { parseApiProperty } from './api-decorator';
+import { parseClassValidators } from './class-validator';
 
 export const uniq = <T = any>(input: T[]): T[] => Array.from(new Set(input));
 export const concatIntoArray = <T = any>(source: T[], target: T[]) =>
@@ -181,14 +182,19 @@ export const generateRelationInput = ({
   canConnectAnnotation,
 }: GenerateRelationInputParam) => {
   const relationInputClassProps: Array<
-    Pick<ParsedField, 'name' | 'type' | 'apiProperties'>
+    Pick<ParsedField, 'name' | 'type' | 'apiProperties' | 'classValidators'>
   > = [];
 
   const imports: ImportStatementParams[] = [];
   const apiExtraModels: string[] = [];
   const generatedClasses: string[] = [];
+  const classValidators: IClassValidator[] = [];
 
-  if (isAnnotatedWith(field, canCreateAnnotation)) {
+  const createRelation = isAnnotatedWith(field, canCreateAnnotation);
+  const connectRelation = isAnnotatedWith(field, canConnectAnnotation);
+  const isRequired = !(createRelation && connectRelation);
+
+  if (createRelation) {
     const preAndPostfixedName = t.createDtoName(field.type);
     apiExtraModels.push(preAndPostfixedName);
 
@@ -213,8 +219,20 @@ export const generateRelationInput = ({
       classValidators?: IClassValidator[];
     } = {};
 
+    if (t.config.classValidation) {
+      decorators.classValidators = parseClassValidators(
+        { ...field, isRequired },
+        preAndPostfixedName,
+      );
+      concatUniqueIntoArray(
+        decorators.classValidators,
+        classValidators,
+        'name',
+      );
+    }
+
     if (!t.config.noDependencies) {
-      decorators.apiProperties = parseApiProperty(field);
+      decorators.apiProperties = parseApiProperty({ ...field, isRequired });
       decorators.apiProperties.push({
         name: 'type',
         value: preAndPostfixedName,
@@ -226,10 +244,11 @@ export const generateRelationInput = ({
       name: 'create',
       type: preAndPostfixedName,
       apiProperties: decorators.apiProperties,
+      classValidators: decorators.classValidators,
     });
   }
 
-  if (isAnnotatedWith(field, canConnectAnnotation)) {
+  if (connectRelation) {
     const preAndPostfixedName = t.connectDtoName(field.type);
     apiExtraModels.push(preAndPostfixedName);
     const modelToImportFrom = allModels.find(({ name }) => name === field.type);
@@ -253,8 +272,20 @@ export const generateRelationInput = ({
       classValidators?: IClassValidator[];
     } = {};
 
+    if (t.config.classValidation) {
+      decorators.classValidators = parseClassValidators(
+        { ...field, isRequired },
+        preAndPostfixedName,
+      );
+      concatUniqueIntoArray(
+        decorators.classValidators,
+        classValidators,
+        'name',
+      );
+    }
+
     if (!t.config.noDependencies) {
-      decorators.apiProperties = parseApiProperty(field);
+      decorators.apiProperties = parseApiProperty({ ...field, isRequired });
       decorators.apiProperties.push({
         name: 'type',
         value: preAndPostfixedName,
@@ -266,6 +297,7 @@ export const generateRelationInput = ({
       name: 'connect',
       type: preAndPostfixedName,
       apiProperties: decorators.apiProperties,
+      classValidators: decorators.classValidators,
     });
   }
 
@@ -304,6 +336,7 @@ export const generateRelationInput = ({
     imports,
     generatedClasses,
     apiExtraModels,
+    classValidators,
   };
 };
 

@@ -109,6 +109,11 @@ export const computeCreateDtoParams = ({
       concatIntoArray(relationInputType.generatedClasses, extraClasses);
       if (!templateHelpers.config.noDependencies)
         concatIntoArray(relationInputType.apiExtraModels, apiExtraModels);
+      concatUniqueIntoArray(
+        relationInputType.classValidators,
+        classValidators,
+        'name',
+      );
     }
 
     if (
@@ -174,7 +179,7 @@ export const computeCreateDtoParams = ({
           ...field,
           ...overrides,
         },
-        templateHelpers.createDtoName,
+        overrides.type || templateHelpers.createDtoName,
       );
       concatUniqueIntoArray(
         decorators.classValidators,
