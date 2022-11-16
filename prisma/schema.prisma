@@ -51,11 +51,14 @@ model Product {
   companyId   String      @db.Uuid
 
   /// @DtoRelationRequired
-  /// @DtoRelationCanConnectOnCreate
+  /// @DtoRelationCanCreateOnCreate
   category Category @relation(fields: [categoryId], references: [id])
 
   /// @DtoRelationRequired
   /// @DtoRelationCanConnectOnCreate
+  /// @DtoRelationCanCreateOnCreate
+  /// @DtoRelationCanConnectOnUpdate
+  /// @DtoRelationCanCreateOnUpdate
   company Company @relation(fields: [companyId], references: [id])
 
   /// @DtoRelationIncludeId
@@ -77,7 +80,9 @@ model Product {
 
 model Category {
   id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name      String
   updatedAt DateTime  @updatedAt
+  /// @DtoRelationCanCreateOnCreate
   Product   Product[]
 }
 

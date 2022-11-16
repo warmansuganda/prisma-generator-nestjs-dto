@@ -103,6 +103,7 @@ export type NamingStyle = 'snake' | 'camel' | 'pascal' | 'kebab';
 export interface IApiProperty {
   name: string;
   value: string;
+  noEncapsulation?: boolean;
 }
 
 export interface IClassValidator {

@@ -17,6 +17,7 @@ import type {
   Model,
   ParsedField,
 } from './types';
+import { parseApiProperty } from './api-decorator';
 
 export const uniq = <T = any>(input: T[]): T[] => Array.from(new Set(input));
 export const concatIntoArray = <T = any>(source: T[], target: T[]) =>
@@ -179,7 +180,9 @@ export const generateRelationInput = ({
   canCreateAnnotation,
   canConnectAnnotation,
 }: GenerateRelationInputParam) => {
-  const relationInputClassProps: Array<Pick<ParsedField, 'name' | 'type'>> = [];
+  const relationInputClassProps: Array<
+    Pick<ParsedField, 'name' | 'type' | 'apiProperties'>
+  > = [];
 
   const imports: ImportStatementParams[] = [];
   const apiExtraModels: string[] = [];
@@ -205,9 +208,24 @@ export const generateRelationInput = ({
       destruct: [preAndPostfixedName],
     });
 
+    const decorators: {
+      apiProperties?: IApiProperty[];
+      classValidators?: IClassValidator[];
+    } = {};
+
+    if (!t.config.noDependencies) {
+      decorators.apiProperties = parseApiProperty(field);
+      decorators.apiProperties.push({
+        name: 'type',
+        value: preAndPostfixedName,
+        noEncapsulation: true,
+      });
+    }
+
     relationInputClassProps.push({
       name: 'create',
       type: preAndPostfixedName,
+      apiProperties: decorators.apiProperties,
     });
   }
 
@@ -230,9 +248,24 @@ export const generateRelationInput = ({
       destruct: [preAndPostfixedName],
     });
 
+    const decorators: {
+      apiProperties?: IApiProperty[];
+      classValidators?: IClassValidator[];
+    } = {};
+
+    if (!t.config.noDependencies) {
+      decorators.apiProperties = parseApiProperty(field);
+      decorators.apiProperties.push({
+        name: 'type',
+        value: preAndPostfixedName,
+        noEncapsulation: true,
+      });
+    }
+
     relationInputClassProps.push({
       name: 'connect',
       type: preAndPostfixedName,
+      apiProperties: decorators.apiProperties,
     });
   }
 

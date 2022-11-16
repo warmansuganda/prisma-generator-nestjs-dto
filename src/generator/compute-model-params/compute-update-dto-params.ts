@@ -182,11 +182,22 @@ export const computeUpdateDtoParams = ({
     }
 
     if (!templateHelpers.config.noDependencies) {
-      decorators.apiProperties = parseApiProperty({
-        ...field,
-        ...overrides,
-        isNullable: !field.isRequired,
-      });
+      decorators.apiProperties = parseApiProperty(
+        {
+          ...field,
+          ...overrides,
+          isNullable: !field.isRequired,
+        },
+        {
+          type: !overrides.type,
+        },
+      );
+      if (overrides.type)
+        decorators.apiProperties.push({
+          name: 'type',
+          value: overrides.type,
+          noEncapsulation: true,
+        });
       if (decorators.apiProperties.length) hasApiProperty = true;
     }
 

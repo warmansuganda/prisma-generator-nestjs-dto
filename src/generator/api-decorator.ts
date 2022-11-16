@@ -159,8 +159,11 @@ export function decorateApiProperty(field: ParsedField): string {
   if (field.apiProperties?.length) {
     decorator += '@ApiProperty({\n';
     field.apiProperties.forEach((prop) => {
+      if (prop.name === 'dummy') return;
       decorator += `  ${prop.name}: ${
-        prop.name === 'enum' ? prop.value : encapsulateString(prop.value)
+        prop.name === 'enum' || prop.noEncapsulation
+          ? prop.value
+          : encapsulateString(prop.value)
       },\n`;
     });
     decorator += '})\n';

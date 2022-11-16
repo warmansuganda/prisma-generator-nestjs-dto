@@ -184,7 +184,15 @@ export const computeCreateDtoParams = ({
     }
 
     if (!templateHelpers.config.noDependencies) {
-      decorators.apiProperties = parseApiProperty(field);
+      decorators.apiProperties = parseApiProperty(field, {
+        type: !overrides.type,
+      });
+      if (overrides.type)
+        decorators.apiProperties.push({
+          name: 'type',
+          value: overrides.type,
+          noEncapsulation: true,
+        });
       if (decorators.apiProperties.length) hasApiProperty = true;
     }
 
