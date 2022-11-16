@@ -86,15 +86,13 @@ export function parseApiProperty(
     type?: boolean;
   } = {},
 ): IApiProperty[] {
-  const incl = Object.assign(
-    {
-      default: true,
-      doc: true,
-      enum: true,
-      type: true,
-    },
-    include,
-  );
+  const incl = {
+    default: true,
+    doc: true,
+    enum: true,
+    type: true,
+    ...include,
+  };
   const properties: IApiProperty[] = [];
 
   if (incl.doc && field.documentation) {
@@ -106,12 +104,17 @@ export function parseApiProperty(
     }
   }
 
-  const scalarFormat = PrismaScalarToFormat[field.type];
-  if (incl.type && scalarFormat) {
-    properties.push(
-      { name: 'type', value: scalarFormat.type },
-      { name: 'format', value: scalarFormat.format },
-    );
+  if (incl.type) {
+    const scalarFormat = PrismaScalarToFormat[field.type];
+    if (scalarFormat) {
+      properties.push(
+        { name: 'type', value: scalarFormat.type },
+        { name: 'format', value: scalarFormat.format },
+      );
+    }
+    if (field.isList) {
+      properties.push({ name: 'isArray', value: 'true' });
+    }
   }
 
   if (incl.enum && field.kind === 'enum') {
