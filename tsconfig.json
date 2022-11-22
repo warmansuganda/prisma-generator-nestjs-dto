@@ -4,6 +4,7 @@
     "esModuleInterop": true,
     "lib": ["esnext"],
     "module": "commonjs",
+    "newLine": "lf",
     "outDir": "dist",
     "removeComments": true,
     "rootDir": "src",
