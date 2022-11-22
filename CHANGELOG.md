@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.14.0] - 2022-11-22
+
+### Added
+
+- add ApiProperty type and class validation to relation inputs [#6][i6]
+
+### Fixed
+
+- add `isArray: true` in ApiProperty decorator, if field is list
+- build dist files with LF endings [#9][i9]
+
 ## [1.13.0] - 2022-09-14
 
 ### Added
@@ -159,3 +170,5 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 [i2]: https://github.com/Brakebein/prisma-generator-nestjs-dto/issues/2
 [i2-comment]: https://github.com/Brakebein/prisma-generator-nestjs-dto/issues/2#issuecomment-1238855460
 [pr3]: https://github.com/Brakebein/prisma-generator-nestjs-dto/pull/3
+[i6]: https://github.com/Brakebein/prisma-generator-nestjs-dto/issues/6
+[i9]: https://github.com/Brakebein/prisma-generator-nestjs-dto/issues/9
