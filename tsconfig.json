@@ -2,14 +2,14 @@
   "compilerOptions": {
     "declaration": true,
     "esModuleInterop": true,
-    "lib": ["esnext"],
+    "lib": ["es2018"],
     "module": "commonjs",
     "newLine": "lf",
     "outDir": "dist",
     "removeComments": true,
     "rootDir": "src",
     "strict": true,
-    "target": "es2019",
+    "target": "es2018",
     "typeRoots": ["./src/@types", "./node_modules/@types"]
   },
   "exclude": [
