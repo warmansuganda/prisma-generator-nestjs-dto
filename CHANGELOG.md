@@ -5,6 +5,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.15.0] - 2022-12-04
+
+- updated dependencies [#11][pr11]
+
+### Fixed
+
+- `replaceAll` is not supported by Node.js < 15 [#10][i10]
+
 ## [1.14.0] - 2022-11-22
 
 ### Added
@@ -172,3 +180,5 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 [pr3]: https://github.com/Brakebein/prisma-generator-nestjs-dto/pull/3
 [i6]: https://github.com/Brakebein/prisma-generator-nestjs-dto/issues/6
 [i9]: https://github.com/Brakebein/prisma-generator-nestjs-dto/issues/9
+[i10]: https://github.com/Brakebein/prisma-generator-nestjs-dto/issues/10
+[pr11]: https://github.com/Brakebein/prisma-generator-nestjs-dto/pull/11
