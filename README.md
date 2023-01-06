@@ -84,6 +84,8 @@ model Post {
   /// @DtoCreateOptional
   /// @DtoUpdateHidden
   createdAt   DateTime @default(now())
+  /// @DtoCastType(DurationLike, luxon)
+  timeUntilExpires Json?
 }
 ```
 
@@ -99,6 +101,11 @@ model Post {
 - `@DtoRelationCanConnectOnUpdate` - adds [connect](https://www.prisma.io/docs/concepts/components/prisma-client/relation-queries#connect-an-existing-record) option on a relation field in the generated `UpdateDTO` - useful when you want/need to connect to an existing related instance
 - `@DtoRelationIncludeId` - include ID of a relation field that is otherwise omitted (use instead of `CanCreate`/`CanConnect` annotations, if you just want to pass the IDs)
 - `@DtoTypeFullUpdate` - in the generated `UpdateDTO`, use the `CreateDTO` of the composite type to enforce a complete replacement the old values (see [#2](https://github.com/Brakebein/prisma-generator-nestjs-dto/issues/2#issuecomment-1238855460))
+- `@DtoCastType(...)` - in all the generated entities, forces a provided type for this field. Especially useful if you need to cast Json fields at read/write. Note, you must provide at least one and may provide up to 3 arguments in the `(...)` with this annotation - the first is the name of the type to force for this field, the second and third can be used to add an `import` for that type at the top of the entity file. For example:
+  - `@DtoCastType(MyType)` will cast the field as `MyType` but add no import
+  - `@DtoCastType(MyType, some-package)` will cast the field as `MyType` and add `import {MyType} from "some-package"`
+  - `@DtoCastType(MyType, ../types, default)` will cast and add `import MyType from "../types"`
+  - `@DtoCastType(MyTypeInterface, ../types, MyType)` will cast as `MyTypeInterface` and add `import {MyType as MyTypeInterface} from "../types"`
 
 ### Schema Object annotations
 
