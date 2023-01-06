@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.16.0] - 2022-01-06
+
+### Added
+
+- `@DtoCastType` annotation [#12][pr12] (thanks to [zackdotcomputer](https://github.com/zackdotcomputer))
+
 ## [1.15.0] - 2022-12-04
 
 - updated dependencies [#11][pr11]
@@ -182,3 +188,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 [i9]: https://github.com/Brakebein/prisma-generator-nestjs-dto/issues/9
 [i10]: https://github.com/Brakebein/prisma-generator-nestjs-dto/issues/10
 [pr11]: https://github.com/Brakebein/prisma-generator-nestjs-dto/pull/11
+[pr12]: https://github.com/Brakebein/prisma-generator-nestjs-dto/pull/12

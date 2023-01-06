@@ -42,6 +42,8 @@ model Product {
   tags        String[]
   /// @DtoCastType(MyType, my-package)
   attributes  Json?
+  /// @DtoCastType(SomeType, ../types, CustomType)
+  someAttributes  Json
   /// @DtoCastType(OtherType, other-package, default)
   otherAttributes Json
   /// @DtoCastType(OtherType, other-package, default)
