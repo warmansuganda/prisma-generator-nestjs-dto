@@ -1,6 +1,7 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
 import makeDir from 'make-dir';
+import slash from 'slash';
 import { generatorHandler } from '@prisma/generator-helper';
 import prettier from 'prettier';
 import { logger, parseEnvValue } from './utils';
@@ -23,6 +24,9 @@ const stringToBoolean = (input: string, defaultValue = false) => {
 export const generate = async (options: GeneratorOptions) => {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const output = parseEnvValue(options.generator.output!);
+  if (!output) {
+    throw new Error('Failed to parse output path');
+  }
 
   const {
     connectDtoPrefix = 'Connect',
@@ -105,9 +109,9 @@ export const generate = async (options: GeneratorOptions) => {
         ? '../'
         : '../../'
       : '';
-    prismaClientImportPath =
-      withStructure +
-      path.relative(output, prismaClientOutputPath).replace(/\\/g, '/');
+    prismaClientImportPath = slash(
+      withStructure + path.relative(output, prismaClientOutputPath),
+    );
     if (!prismaClientImportPath.startsWith('.')) {
       prismaClientImportPath = './' + prismaClientImportPath;
     }
