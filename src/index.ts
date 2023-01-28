@@ -106,9 +106,11 @@ export const generate = async (options: GeneratorOptions) => {
         : '../../'
       : '';
     prismaClientImportPath =
-      './' +
       withStructure +
-      path.relative(output, prismaClientOutputPath).replace('\\', '/');
+      path.relative(output, prismaClientOutputPath).replace(/\\/g, '/');
+    if (!prismaClientImportPath.startsWith('.')) {
+      prismaClientImportPath = './' + prismaClientImportPath;
+    }
   }
 
   if (classValidation && outputType !== 'class') {

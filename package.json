@@ -66,6 +66,7 @@
     "ts-toolbelt": "^9.6.0"
   },
   "devDependencies": {
+    "@prisma/client": "^4.9.0",
     "@types/jest": "^29.2.3",
     "@types/node": "^18.11.9",
     "@typescript-eslint/eslint-plugin": "^5.44.0",
