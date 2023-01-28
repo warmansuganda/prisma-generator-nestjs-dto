@@ -43,6 +43,7 @@ model Product {
   reviewCount Int         @default(0)
   type        ProductType
   /// @ArrayNotEmpty
+  /// @MinLength(3)
   tags        String[]
   /// @DtoCastType(MyType, my-package)
   attributes  Json?
