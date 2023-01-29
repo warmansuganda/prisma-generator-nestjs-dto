@@ -93,6 +93,28 @@ export const generate = async (options: GeneratorOptions) => {
     false,
   );
 
+  if (classValidation && outputType !== 'class') {
+    throw new Error(
+      `To use 'validation' validation decorators, 'outputType' must be 'class'.`,
+    );
+  }
+
+  if (classValidation && noDependencies) {
+    throw new Error(
+      `To use 'validation' validation decorators, 'noDependencies' cannot be false.`,
+    );
+  }
+
+  const definiteAssignmentAssertion = stringToBoolean(
+    options.generator.config.definiteAssignmentAssertion,
+    false,
+  );
+  if (definiteAssignmentAssertion && outputType !== 'class') {
+    throw new Error(
+      `To use 'definiteAssignmentAssertion', 'outputType' must be 'class'.`,
+    );
+  }
+
   const prismaClientGenerator = options.otherGenerators.find(
     (config) => config.name === 'client',
   );
@@ -117,18 +139,6 @@ export const generate = async (options: GeneratorOptions) => {
     }
   }
 
-  if (classValidation && outputType !== 'class') {
-    throw new Error(
-      `To use 'validation' validation decorators, 'outputType' must be 'class'.`,
-    );
-  }
-
-  if (classValidation && noDependencies) {
-    throw new Error(
-      `To use 'validation' validation decorators, 'noDependencies' cannot be false.`,
-    );
-  }
-
   const results = run({
     output,
     dmmf: options.dmmf,
@@ -145,6 +155,7 @@ export const generate = async (options: GeneratorOptions) => {
     classValidation,
     outputType,
     noDependencies,
+    definiteAssignmentAssertion,
     prismaClientImportPath,
   });
 

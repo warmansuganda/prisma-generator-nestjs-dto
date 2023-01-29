@@ -30,6 +30,7 @@ interface RunParam {
   classValidation: boolean;
   outputType: string;
   noDependencies: boolean;
+  definiteAssignmentAssertion: boolean;
   prismaClientImportPath: string;
 }
 
@@ -46,6 +47,7 @@ export const run = ({
     classValidation,
     outputType,
     noDependencies,
+    definiteAssignmentAssertion,
     prismaClientImportPath,
     ...preAndSuffixes
   } = options;
@@ -65,6 +67,7 @@ export const run = ({
     classValidation,
     outputType,
     noDependencies,
+    definiteAssignmentAssertion,
     prismaClientImportPath,
     ...preAndSuffixes,
   });

@@ -97,6 +97,7 @@ interface MakeHelpersParam {
   classValidation: boolean;
   outputType: string;
   noDependencies: boolean;
+  definiteAssignmentAssertion: boolean;
   prismaClientImportPath: string;
 }
 export const makeHelpers = ({
@@ -111,6 +112,7 @@ export const makeHelpers = ({
   classValidation,
   outputType,
   noDependencies,
+  definiteAssignmentAssertion,
   prismaClientImportPath,
 }: MakeHelpersParam) => {
   const className = (name: string, prefix = '', suffix = '') =>
@@ -201,11 +203,14 @@ export const makeHelpers = ({
   ) =>
     `${decorateApiProperty(field)}${decorateClassValidators(field)}${
       field.name
-    }${unless(field.isRequired && !forceOptional, '?')}: ${fieldType(
-      field,
-      dtoType,
-      useInputTypes,
-    )} ${when(field.isNullable, ' | null')};`;
+    }${unless(
+      field.isRequired && !forceOptional,
+      '?',
+      when(definiteAssignmentAssertion, '!'),
+    )}: ${fieldType(field, dtoType, useInputTypes)} ${when(
+      field.isNullable,
+      ' | null',
+    )};`;
 
   const fieldsToDtoProps = (
     fields: ParsedField[],
@@ -223,6 +228,7 @@ export const makeHelpers = ({
     `${decorateApiProperty(field)}${field.name}${unless(
       field.isRequired,
       '?',
+      when(definiteAssignmentAssertion, '!'),
     )}: ${fieldType(field)} ${when(field.isNullable, ' | null')};`;
 
   const fieldsToEntityProps = (fields: ParsedField[]) =>
@@ -242,6 +248,7 @@ export const makeHelpers = ({
       classValidation,
       outputType,
       noDependencies,
+      definiteAssignmentAssertion,
       prismaClientImportPath,
     },
     apiExtraModels,

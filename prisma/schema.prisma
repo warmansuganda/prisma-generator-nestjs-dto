@@ -23,6 +23,7 @@ generator nestjsDto {
   classValidation                 = "true"
   noDependencies                  = "false"
   outputType                      = "class"
+  definiteAssignmentAssertion     = "true"
   prettier                        = "true"
 }
 
