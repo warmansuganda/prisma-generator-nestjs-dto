@@ -434,6 +434,11 @@ export const generateUniqueInput = ({
       decorators.apiProperties = parseApiProperty({ ...field, ...overrides });
     }
 
+    if (t.config.noDependencies) {
+      if (field.type === 'Json') field.type = 'Object';
+      else if (field.type === 'Decimal') field.type = 'Float';
+    }
+
     return mapDMMFToParsedField(field, overrides, decorators);
   });
 
@@ -450,9 +455,14 @@ export const generateUniqueInput = ({
 
   apiExtraModels.push(preAndPostfixedInputClassName);
 
+  const importPrismaClient = makeImportsFromPrismaClient(
+    fields,
+    t.config.prismaClientImportPath,
+  );
+
   return {
     type: preAndPostfixedInputClassName,
-    imports,
+    imports: zipImportStatementParams([...importPrismaClient, ...imports]),
     generatedClasses,
     apiExtraModels,
     classValidators,

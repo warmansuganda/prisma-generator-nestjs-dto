@@ -130,9 +130,12 @@ model User {
 
 model Role {
   id   String @id
-  name String @unique
+  name Json
+  attribute String
 
   companyUserRoles CompanyUserRole[]
+
+  @@unique([name, attribute])
 }
 
 model CompanyUserRole {

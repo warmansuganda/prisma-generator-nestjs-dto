@@ -127,6 +127,11 @@ export const computeConnectDtoParams = ({
       if (decorators.apiProperties.length) hasApiProperty = true;
     }
 
+    if (templateHelpers.config.noDependencies) {
+      if (field.type === 'Json') field.type = 'Object';
+      else if (field.type === 'Decimal') field.type = 'Float';
+    }
+
     return mapDMMFToParsedField(field, overrides, decorators);
   });
 
