@@ -4,8 +4,10 @@ import {
   concatIntoArray,
   concatUniqueIntoArray,
   generateUniqueInput,
+  makeImportsFromPrismaClient,
   mapDMMFToParsedField,
   uniq,
+  zipImportStatementParams,
 } from '../helpers';
 import type { ConnectDtoParams, Model } from '../types';
 import { IApiProperty, IClassValidator, ImportStatementParams } from '../types';
@@ -151,10 +153,15 @@ export const computeConnectDtoParams = ({
     });
   }
 
+  const importPrismaClient = makeImportsFromPrismaClient(
+    fields,
+    templateHelpers.config.prismaClientImportPath,
+  );
+
   return {
     model,
     fields,
-    imports,
+    imports: zipImportStatementParams([...importPrismaClient, ...imports]),
     extraClasses,
     apiExtraModels,
   };
