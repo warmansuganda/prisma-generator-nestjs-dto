@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.17.0] - 2022-02-10
+
+### Added
+
+- support custom prisma-client import path [#15][pr15] (thanks to [konsti](https://github.com/konsti))
+- `definiteAssignmentAssertion` flag to optionally add definite assignment assertion operator `!` to properties [#14][i14]
+- support for compound unique inputs [#i8][i8], all ConnectDTOs now have proper swagger and class-validation decorators
+
+### Fixed
+
+- regular expression for class validators was also matching substrings
+
 ## [1.16.0] - 2022-01-06
 
 ### Added
@@ -185,7 +197,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 [i2-comment]: https://github.com/Brakebein/prisma-generator-nestjs-dto/issues/2#issuecomment-1238855460
 [pr3]: https://github.com/Brakebein/prisma-generator-nestjs-dto/pull/3
 [i6]: https://github.com/Brakebein/prisma-generator-nestjs-dto/issues/6
+[i8]: https://github.com/Brakebein/prisma-generator-nestjs-dto/issues/8
 [i9]: https://github.com/Brakebein/prisma-generator-nestjs-dto/issues/9
 [i10]: https://github.com/Brakebein/prisma-generator-nestjs-dto/issues/10
 [pr11]: https://github.com/Brakebein/prisma-generator-nestjs-dto/pull/11
 [pr12]: https://github.com/Brakebein/prisma-generator-nestjs-dto/pull/12
+[i14]: https://github.com/Brakebein/prisma-generator-nestjs-dto/issues/14
+[pr15]: https://github.com/Brakebein/prisma-generator-nestjs-dto/pull/15

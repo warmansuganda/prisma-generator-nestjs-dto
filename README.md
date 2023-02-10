@@ -24,6 +24,8 @@ This is a fork of [@vegardit/prisma-generator-nestjs-dto](https://github.com/veg
 * control output format with additional flags `flatResourceStructure`, `noDependencies`, and `outputType`
 * optionally auto-format output with prettier
 
+See [CHANGELOG](CHANGELOG.md) for all improvements and changes.
+
 ### ToDo
 
 - [ ] fix `enum` handling
