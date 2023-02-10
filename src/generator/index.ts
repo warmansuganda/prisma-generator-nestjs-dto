@@ -175,6 +175,7 @@ export const run = ({
       ),
       content: generateConnectDto({
         ...modelParams.connect,
+        exportRelationModifierClasses,
         templateHelpers,
       }),
     };

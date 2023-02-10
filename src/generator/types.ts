@@ -27,6 +27,7 @@ export interface ParsedField {
   relationName?: string;
   relationFromFields?: string[];
   relationToFields?: string[];
+  pureType?: boolean;
 }
 
 export interface ExtraModel {
@@ -59,7 +60,10 @@ export interface DtoParams {
   imports: ImportStatementParams[];
 }
 
-export type ConnectDtoParams = Omit<DtoParams, 'imports'>;
+export interface ConnectDtoParams extends DtoParams {
+  extraClasses: string[];
+  apiExtraModels: string[];
+}
 
 export interface CreateDtoParams extends DtoParams {
   extraClasses: string[];

@@ -187,7 +187,9 @@ export const makeHelpers = ({
       castType ||
       (field.kind === 'scalar'
         ? scalarToTS(field.type, toInputType)
-        : field.kind === 'enum' || field.kind === 'relation-input'
+        : field.kind === 'enum' ||
+          field.kind === 'relation-input' ||
+          field.pureType === true
         ? field.type
         : field.relationName
         ? entityName(field.type)

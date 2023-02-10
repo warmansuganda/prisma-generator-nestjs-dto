@@ -394,6 +394,71 @@ export const generateRelationInput = ({
   };
 };
 
+interface GenerateUniqueInputParam {
+  compoundName: string;
+  fields: DMMF.Field[];
+  model: Model;
+  templateHelpers: TemplateHelpers;
+}
+export const generateUniqueInput = ({
+  compoundName,
+  fields,
+  model,
+  templateHelpers: t,
+}: GenerateUniqueInputParam) => {
+  const imports: ImportStatementParams[] = [];
+  const apiExtraModels: string[] = [];
+  const generatedClasses: string[] = [];
+  const classValidators: IClassValidator[] = [];
+
+  const parsedFields = fields.map((field) => {
+    const overrides: Partial<DMMF.Field> = { isRequired: true };
+    const decorators: {
+      apiProperties?: IApiProperty[];
+      classValidators?: IClassValidator[];
+    } = {};
+
+    if (t.config.classValidation) {
+      decorators.classValidators = parseClassValidators({
+        ...field,
+        ...overrides,
+      });
+      concatUniqueIntoArray(
+        decorators.classValidators,
+        classValidators,
+        'name',
+      );
+    }
+
+    if (!t.config.noDependencies) {
+      decorators.apiProperties = parseApiProperty({ ...field, ...overrides });
+    }
+
+    return mapDMMFToParsedField(field, overrides, decorators);
+  });
+
+  const originalInputClassName = `${t.transformClassNameCase(
+    model.name,
+  )}${t.transformClassNameCase(compoundName)}UniqueInput`;
+  const preAndPostfixedInputClassName = t.plainDtoName(originalInputClassName);
+
+  generatedClasses.push(`${
+    t.config.outputType
+  } ${preAndPostfixedInputClassName} {
+    ${t.fieldsToDtoProps(parsedFields, 'plain', true)}
+  }`);
+
+  apiExtraModels.push(preAndPostfixedInputClassName);
+
+  return {
+    type: preAndPostfixedInputClassName,
+    imports,
+    generatedClasses,
+    apiExtraModels,
+    classValidators,
+  };
+};
+
 export const mergeImportStatements = (
   first: ImportStatementParams,
   second: ImportStatementParams,

@@ -28,40 +28,41 @@ generator nestjsDto {
 }
 
 model Product {
-  id          String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  /// @description Product ID
+  id              String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   /// @Contains('Product')
   /// @description Project's name
   /// @example My first product
-  name        String      @db.VarChar(255)
-  description String      @db.VarChar(1024)
+  name            String      @db.VarChar(255)
+  description     String      @db.VarChar(1024)
   /// @maxItems 5
-  images      Json[]      @db.Json
-  highlighted Boolean     @default(false)
+  images          Json[]      @db.Json
+  highlighted     Boolean     @default(false)
   /// @DtoCreateOptional
   /// @description Number of reviews
   /// @minimum 9
   /// @example 12
-  reviewCount Int         @default(0)
-  type        ProductType
+  reviewCount     Int         @default(0)
+  type            ProductType
   /// @ArrayNotEmpty
   /// @MinLength(3)
-  tags        String[]
+  tags            String[]
   /// @DtoCastType(MyType, my-package)
-  attributes  Json?
+  attributes      Json?
   /// @DtoCastType(SomeType, ../types, CustomType)
   someAttributes  Json
   /// @DtoCastType(OtherType, other-package, default)
   otherAttributes Json
   /// @DtoCastType(OtherType, other-package, default)
   finalAttributes Json?
-  score       Float?
-  lastOrder   DateTime?
+  score           Float?
+  lastOrder       DateTime?
   /// @DtoCreateOptional
   /// @DtoUpdateOptional
-  note        String      @default("")
+  note            String      @default("")
   /// @DtoRelationIncludeId
-  categoryId  String      @db.Uuid
-  companyId   String      @db.Uuid
+  categoryId      String      @db.Uuid
+  companyId       String      @db.Uuid
 
   /// @DtoRelationRequired
   /// @DtoRelationCanCreateOnCreate
@@ -88,6 +89,10 @@ model Product {
   /// @DtoUpdateOptional
   updatedAt DateTime @updatedAt @db.Timestamptz(6)
 
+  bikeId String?
+  /// @DtoRelationCanConnectOnCreate
+  bike Bike? @relation(fields: [bikeId], references: [id])
+
   @@map("products")
 }
 
@@ -102,6 +107,8 @@ model Category {
 model Company {
   id      String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   Product Product[]
+
+  companyUserRoles CompanyUserRole[]
 }
 
 model Photo {
@@ -112,4 +119,41 @@ model Photo {
 enum ProductType {
   digital
   analogue
+}
+
+model User {
+  id   String @id
+  name String
+
+  companyUserRoles CompanyUserRole[]
+}
+
+model Role {
+  id   String @id
+  name String @unique
+
+  companyUserRoles CompanyUserRole[]
+}
+
+model CompanyUserRole {
+  companyId String
+  company   Company @relation(fields: [companyId], references: [id])
+  userId    String
+  user      User    @relation(fields: [userId], references: [id])
+  roleId    String
+  role      Role    @relation(fields: [roleId], references: [id])
+
+  @@id([companyId, userId, roleId])
+}
+
+model Bike {
+  id String @id @default(uuid())
+  chassis_number String
+  model String
+  vendor String
+  year_from Int
+  year_to Int
+  products Product[]
+
+  @@unique([vendor, chassis_number], map: "My_Bike_Unique")
 }
