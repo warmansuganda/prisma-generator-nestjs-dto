@@ -101,19 +101,19 @@ model Category {
   name      String
   updatedAt DateTime  @updatedAt
   /// @DtoRelationCanCreateOnCreate
-  Product   Product[]
+  product   Product[]
 }
 
 model Company {
   id      String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  Product Product[]
+  product Product[]
 
   companyUserRoles CompanyUserRole[]
 }
 
 model Photo {
   id      String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  Product Product[]
+  product Product[]
 }
 
 enum ProductType {
