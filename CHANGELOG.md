@@ -5,6 +5,10 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.17.4] - 2023-03-04
+
+- fix connect and create class names that get too many suffixes if `dtoSuffix` does not end with `dto` [#17][i17]
+
 ## [1.17.3] - 2023-02-22
 
 ### Fixed
@@ -217,3 +221,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 [i14]: https://github.com/Brakebein/prisma-generator-nestjs-dto/issues/14
 [pr15]: https://github.com/Brakebein/prisma-generator-nestjs-dto/pull/15
 [pr16]: https://github.com/Brakebein/prisma-generator-nestjs-dto/pull/16
+[i17]: https://github.com/Brakebein/prisma-generator-nestjs-dto/issues/17
