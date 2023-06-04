@@ -205,6 +205,15 @@ export const computeUpdateDtoParams = ({
           noEncapsulation: true,
         });
       if (decorators.apiProperties.length) hasApiProperty = true;
+      const typeProperty = decorators.apiProperties.find(
+        (p) => p.name === 'type',
+      );
+      if (typeProperty?.value === field.type)
+        typeProperty.value =
+          '() => ' +
+          (doFullUpdate
+            ? templateHelpers.createDtoName(typeProperty.value)
+            : templateHelpers.updateDtoName(typeProperty.value));
     }
 
     if (templateHelpers.config.noDependencies) {

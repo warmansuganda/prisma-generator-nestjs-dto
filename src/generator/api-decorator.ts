@@ -14,13 +14,16 @@ const ApiProps = [
   'example',
 ];
 
-const PrismaScalarToFormat: Record<string, { type: string; format: string }> = {
-  Int: { type: 'integer', format: 'int32' },
-  BigInt: { type: 'integer', format: 'int64' },
-  Float: { type: 'number', format: 'float' },
-  Decimal: { type: 'number', format: 'double' },
-  DateTime: { type: 'string', format: 'date-time' },
-};
+const PrismaScalarToFormat: Record<string, { type: string; format?: string }> =
+  {
+    String: { type: 'string' },
+    Boolean: { type: 'boolean' },
+    Int: { type: 'integer', format: 'int32' },
+    BigInt: { type: 'integer', format: 'int64' },
+    Float: { type: 'number', format: 'float' },
+    Decimal: { type: 'number', format: 'double' },
+    DateTime: { type: 'string', format: 'date-time' },
+  };
 
 export function isAnnotatedWithDoc(field: ParsedField): boolean {
   return ApiProps.some((prop) =>
@@ -106,14 +109,28 @@ export function parseApiProperty(
 
   if (incl.type) {
     const scalarFormat = PrismaScalarToFormat[field.type];
-    if (scalarFormat) {
+    if (field.isList) {
+      if (scalarFormat) {
+        properties.push({
+          name: 'type',
+          value: scalarFormat.type,
+        });
+        if (scalarFormat.format) {
+          properties.push({ name: 'format', value: scalarFormat.format });
+        }
+      } else {
+        properties.push({
+          name: 'type',
+          value: field.type,
+          noEncapsulation: true,
+        });
+      }
+      properties.push({ name: 'isArray', value: 'true' });
+    } else if (scalarFormat?.format) {
       properties.push(
         { name: 'type', value: scalarFormat.type },
         { name: 'format', value: scalarFormat.format },
       );
-    }
-    if (field.isList) {
-      properties.push({ name: 'isArray', value: 'true' });
     }
   }
 

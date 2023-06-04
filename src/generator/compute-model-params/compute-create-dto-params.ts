@@ -199,6 +199,12 @@ export const computeCreateDtoParams = ({
           noEncapsulation: true,
         });
       if (decorators.apiProperties.length) hasApiProperty = true;
+      const typeProperty = decorators.apiProperties.find(
+        (p) => p.name === 'type',
+      );
+      if (typeProperty?.value === field.type)
+        typeProperty.value =
+          '() => ' + templateHelpers.createDtoName(typeProperty.value);
     }
 
     if (templateHelpers.config.noDependencies) {

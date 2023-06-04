@@ -98,6 +98,12 @@ export const computePlainDtoParams = ({
         { default: false },
       );
       if (decorators.apiProperties.length) hasApiProperty = true;
+      const typeProperty = decorators.apiProperties.find(
+        (p) => p.name === 'type',
+      );
+      if (typeProperty?.value === field.type)
+        typeProperty.value =
+          '() => ' + templateHelpers.plainDtoName(typeProperty.value);
     }
 
     if (templateHelpers.config.noDependencies) {

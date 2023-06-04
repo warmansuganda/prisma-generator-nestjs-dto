@@ -22,7 +22,7 @@ generator nestjsDto {
 }
 
 model Product {
-  id     String  @id @default(auto()) @map("_id") @db.ObjectId
+  id     String   @id @default(auto()) @map("_id") @db.ObjectId
   /// @description name
   name   String
   /// @DtoTypeFullUpdate
@@ -37,6 +37,7 @@ type Photo {
   /// @minimum 9
   width  Int
   url    String
+  camera Float[]
   file   File?
 }
 
