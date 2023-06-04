@@ -53,7 +53,8 @@ generator nestjsDto {
   fileNamingStyle                 = "camel"
   noDependencies                  = "false"
   outputType                      = "class"
-  definiteAssignmentAssertion     = "true"
+  definiteAssignmentAssertion     = "false"
+  requiredResponseApiProperty     = "true"
   prettier                        = "false"
 }
 ```
@@ -77,6 +78,7 @@ All parameters are optional.
 - [`noDependencies`]: (default: `"false"`) - Any imports and decorators that are specific to NestJS and Prisma are omitted, such that there are no references to external dependencies. This is useful if you want to generate appropriate DTOs for the frontend.
 - [`outputType`]: (default: `"class"`) - Output the DTOs as `class` or as `interface`. `interface` should only be used to generate DTOs for the frontend.
 - [`definiteAssignmentAssertion`]: (default: `"false"`) - Add a definite assignment assertion operator `!` to required fields, which is required if `strict` and/or `strictPropertyInitialization` is set `true` in your tsconfig.json's `compilerOptions`.
+- [`requiredResponseApiProperty`]: (default: `"true"`) - If `false`, add `@ApiRequired({ required: false })` to response DTO properties. Otherwise, use `required` defaults always to `true` unless field is optional.
 - [`prettier`]: (default: `"false"`) - Stylize output files with prettier.
 
 ## Annotations

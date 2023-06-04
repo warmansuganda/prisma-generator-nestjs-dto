@@ -115,6 +115,11 @@ export const generate = async (options: GeneratorOptions) => {
     );
   }
 
+  const requiredResponseApiProperty = stringToBoolean(
+    options.generator.config.requiredResponseApiProperty,
+    true,
+  );
+
   const prismaClientGenerator = options.otherGenerators.find(
     (config) => config.name === 'client',
   );
@@ -156,6 +161,7 @@ export const generate = async (options: GeneratorOptions) => {
     outputType,
     noDependencies,
     definiteAssignmentAssertion,
+    requiredResponseApiProperty,
     prismaClientImportPath,
   });
 

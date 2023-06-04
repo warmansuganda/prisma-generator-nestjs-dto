@@ -94,7 +94,13 @@ export const computePlainDtoParams = ({
 
     if (!templateHelpers.config.noDependencies) {
       decorators.apiProperties = parseApiProperty(
-        { ...field, isRequired: false, isNullable: !field.isRequired },
+        {
+          ...field,
+          isRequired: templateHelpers.config.requiredResponseApiProperty
+            ? !!overrides.isRequired
+            : false,
+          isNullable: !field.isRequired,
+        },
         { default: false },
       );
       if (decorators.apiProperties.length) hasApiProperty = true;
