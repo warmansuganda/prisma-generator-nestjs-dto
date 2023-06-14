@@ -174,7 +174,12 @@ export const computeEntityParams = ({
       );
       if (typeProperty?.value === field.type)
         typeProperty.value =
-          '() => ' + templateHelpers.plainDtoName(typeProperty.value);
+          '() => ' +
+          (field.type === 'Json'
+            ? 'Object'
+            : isType(field)
+            ? templateHelpers.plainDtoName(typeProperty.value)
+            : templateHelpers.entityName(typeProperty.value));
     }
 
     if (templateHelpers.config.noDependencies) {

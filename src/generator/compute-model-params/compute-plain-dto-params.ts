@@ -109,7 +109,10 @@ export const computePlainDtoParams = ({
       );
       if (typeProperty?.value === field.type)
         typeProperty.value =
-          '() => ' + templateHelpers.plainDtoName(typeProperty.value);
+          '() => ' +
+          (field.type === 'Json'
+            ? 'Object'
+            : templateHelpers.plainDtoName(typeProperty.value));
     }
 
     if (templateHelpers.config.noDependencies) {

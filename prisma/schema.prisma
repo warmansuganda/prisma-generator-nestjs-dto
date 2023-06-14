@@ -29,21 +29,21 @@ generator nestjsDto {
 
 model Product {
   /// @description Product ID
-  id              String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id              String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   /// @Contains('Product')
   /// @description Project's name
   /// @example My first product
-  name            String      @db.VarChar(255)
-  description     String      @db.VarChar(1024)
+  name            String        @db.VarChar(255)
+  description     String        @db.VarChar(1024)
   /// @maxItems 5
-  images          Json[]      @db.Json
-  highlighted     Boolean     @default(false)
+  images          Json[]        @db.Json
+  highlighted     Boolean       @default(false)
   /// @DtoCreateOptional
   /// @description Number of reviews
   /// @minimum 9
   /// @example 12
-  reviewCount     Int         @default(0)
-  type            ProductType
+  reviewCount     Int           @default(0)
+  type            ProductType[]
   /// @ArrayNotEmpty
   /// @MinLength(3)
   tags            String[]
@@ -61,10 +61,10 @@ model Product {
   lastOrder       DateTime?
   /// @DtoCreateOptional
   /// @DtoUpdateOptional
-  note            String      @default("")
+  note            String        @default("")
   /// @DtoRelationIncludeId
-  categoryId      String      @db.Uuid
-  companyId       String      @db.Uuid
+  categoryId      String        @db.Uuid
+  companyId       String        @db.Uuid
 
   /// @DtoRelationRequired
   /// @DtoRelationCanCreateOnCreate

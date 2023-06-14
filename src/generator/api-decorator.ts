@@ -118,7 +118,7 @@ export function parseApiProperty(
         if (scalarFormat.format) {
           properties.push({ name: 'format', value: scalarFormat.format });
         }
-      } else {
+      } else if (field.kind !== 'enum') {
         properties.push({
           name: 'type',
           value: field.type,

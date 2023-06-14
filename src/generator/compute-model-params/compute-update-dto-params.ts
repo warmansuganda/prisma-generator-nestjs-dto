@@ -213,7 +213,9 @@ export const computeUpdateDtoParams = ({
       if (typeProperty?.value === field.type)
         typeProperty.value =
           '() => ' +
-          (doFullUpdate
+          (field.type === 'Json'
+            ? 'Object'
+            : doFullUpdate
             ? templateHelpers.createDtoName(typeProperty.value)
             : templateHelpers.updateDtoName(typeProperty.value));
     }

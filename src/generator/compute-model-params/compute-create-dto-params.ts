@@ -206,7 +206,10 @@ export const computeCreateDtoParams = ({
       );
       if (typeProperty?.value === field.type)
         typeProperty.value =
-          '() => ' + templateHelpers.createDtoName(typeProperty.value);
+          '() => ' +
+          (field.type === 'Json'
+            ? 'Object'
+            : templateHelpers.createDtoName(typeProperty.value));
     }
 
     if (templateHelpers.config.noDependencies) {
