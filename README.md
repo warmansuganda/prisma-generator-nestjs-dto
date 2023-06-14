@@ -96,6 +96,8 @@ model Post {
 ```
 
 - `@DtoReadOnly` - omits field in `CreateDTO` and `UpdateDTO`
+- `@DtoCreateHidden` - omits field in `CreateDTO`
+- `@DtoUpdateHidden` - omits field in `UpdateDTO`
 - `@DtoEntityHidden` - omits field in `Entity`
 - `@DtoCreateOptional` - adds field **optionally** to `CreateDTO` - useful for fields that would otherwise be omitted (e.g. `@id`, `@updatedAt`)
 - `@DtoUpdateOptional` - adds field **optionally** to `UpdateDTO` - useful for fields that would otherwise be omitted (e.g. `@id`, `@updatedAt`)

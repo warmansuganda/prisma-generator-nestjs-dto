@@ -1,5 +1,7 @@
 export const DTO_IGNORE_MODEL = /@DtoIgnoreModel/;
 export const DTO_READ_ONLY = /@DtoReadOnly/;
+export const DTO_CREATE_HIDDEN = /@DtoCreateHidden/;
+export const DTO_UPDATE_HIDDEN = /@DtoUpdateHidden/;
 export const DTO_ENTITY_HIDDEN = /@DtoEntityHidden/;
 export const DTO_CREATE_OPTIONAL = /@DtoCreateOptional/;
 export const DTO_UPDATE_OPTIONAL = /@DtoUpdateOptional/;

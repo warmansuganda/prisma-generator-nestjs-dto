@@ -6,6 +6,7 @@ import {
   DTO_RELATION_INCLUDE_ID,
   DTO_RELATION_MODIFIERS_ON_UPDATE,
   DTO_TYPE_FULL_UPDATE,
+  DTO_UPDATE_HIDDEN,
   DTO_UPDATE_OPTIONAL,
 } from '../annotations';
 import {
@@ -79,6 +80,7 @@ export const computeUpdateDtoParams = ({
       field.isReadOnly = false;
 
     if (isReadOnly(field)) return result;
+    if (isAnnotatedWith(field, DTO_UPDATE_HIDDEN)) return result;
     if (isRelation(field)) {
       if (!isAnnotatedWithOneOf(field, DTO_RELATION_MODIFIERS_ON_UPDATE)) {
         return result;

@@ -1,6 +1,7 @@
 import slash from 'slash';
 import path from 'node:path';
 import {
+  DTO_CREATE_HIDDEN,
   DTO_CREATE_OPTIONAL,
   DTO_RELATION_CAN_CONNECT_ON_CREATE,
   DTO_RELATION_CAN_CREATE_ON_CREATE,
@@ -76,6 +77,7 @@ export const computeCreateDtoParams = ({
       field.isReadOnly = false;
 
     if (isReadOnly(field)) return result;
+    if (isAnnotatedWith(field, DTO_CREATE_HIDDEN)) return result;
     if (isRelation(field)) {
       if (!isAnnotatedWithOneOf(field, DTO_RELATION_MODIFIERS_ON_CREATE)) {
         return result;
