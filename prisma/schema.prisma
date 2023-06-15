@@ -103,6 +103,7 @@ model Category {
   name      String
   updatedAt DateTime  @updatedAt
   /// @DtoRelationCanCreateOnCreate
+  /// @DtoRelationCanConnectOnUpdate
   product   Product[]
 }
 

@@ -286,12 +286,17 @@ export const generateRelationInput = ({
     }
 
     if (!t.config.noDependencies) {
-      decorators.apiProperties = parseApiProperty({ ...field, isRequired });
+      decorators.apiProperties = parseApiProperty(
+        { ...field, isRequired },
+        { type: false },
+      );
       decorators.apiProperties.push({
         name: 'type',
         value: preAndPostfixedName,
         noEncapsulation: true,
       });
+      if (field.isList)
+        decorators.apiProperties.push({ name: 'isArray', value: 'true' });
     }
 
     relationInputClassProps.push({
@@ -339,12 +344,17 @@ export const generateRelationInput = ({
     }
 
     if (!t.config.noDependencies) {
-      decorators.apiProperties = parseApiProperty({ ...field, isRequired });
+      decorators.apiProperties = parseApiProperty(
+        { ...field, isRequired },
+        { type: false },
+      );
       decorators.apiProperties.push({
         name: 'type',
         value: preAndPostfixedName,
         noEncapsulation: true,
       });
+      if (field.isList)
+        decorators.apiProperties.push({ name: 'isArray', value: 'true' });
     }
 
     relationInputClassProps.push({
