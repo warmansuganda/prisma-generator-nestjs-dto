@@ -156,6 +156,7 @@ model Bike {
   id             String    @id @default(uuid())
   chassis_number String
   model          String
+  /// @DtoApiHidden
   vendor         String
   year_from      Int
   year_to        Int
