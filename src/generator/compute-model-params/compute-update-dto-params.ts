@@ -1,6 +1,7 @@
 import slash from 'slash';
 import path from 'node:path';
 import {
+  DTO_API_HIDDEN,
   DTO_RELATION_CAN_CONNECT_ON_UPDATE,
   DTO_RELATION_CAN_CREATE_ON_UPDATE,
   DTO_RELATION_INCLUDE_ID,
@@ -37,10 +38,13 @@ import type {
   UpdateDtoParams,
   ImportStatementParams,
   ParsedField,
-  IApiProperty,
+  IDecorators,
+  IClassValidator,
 } from '../types';
-import { parseApiProperty } from '../api-decorator';
-import { IClassValidator } from '../types';
+import {
+  makeImportsFromNestjsSwagger,
+  parseApiProperty,
+} from '../api-decorator';
 import { parseClassValidators } from '../class-validator';
 
 interface ComputeUpdateDtoParamsParam {
@@ -53,7 +57,6 @@ export const computeUpdateDtoParams = ({
   allModels,
   templateHelpers,
 }: ComputeUpdateDtoParamsParam): UpdateDtoParams => {
-  let hasApiProperty = false;
   const imports: ImportStatementParams[] = [];
   const extraClasses: string[] = [];
   const apiExtraModels: string[] = [];
@@ -68,10 +71,7 @@ export const computeUpdateDtoParams = ({
       isRequired: false,
       isNullable: !field.isRequired,
     };
-    const decorators: {
-      apiProperties?: IApiProperty[];
-      classValidators?: IClassValidator[];
-    } = {};
+    const decorators: IDecorators = {};
 
     if (
       isAnnotatedWith(field, DTO_RELATION_INCLUDE_ID) &&
@@ -190,34 +190,37 @@ export const computeUpdateDtoParams = ({
     }
 
     if (!templateHelpers.config.noDependencies) {
-      decorators.apiProperties = parseApiProperty(
-        {
-          ...field,
-          ...overrides,
-          isNullable: !field.isRequired,
-        },
-        {
-          type: !overrides.type,
-        },
-      );
-      if (overrides.type)
-        decorators.apiProperties.push({
-          name: 'type',
-          value: overrides.type,
-          noEncapsulation: true,
-        });
-      if (decorators.apiProperties.length) hasApiProperty = true;
-      const typeProperty = decorators.apiProperties.find(
-        (p) => p.name === 'type',
-      );
-      if (typeProperty?.value === field.type)
-        typeProperty.value =
-          '() => ' +
-          (field.type === 'Json'
-            ? 'Object'
-            : doFullUpdate
-            ? templateHelpers.createDtoName(typeProperty.value)
-            : templateHelpers.updateDtoName(typeProperty.value));
+      if (isAnnotatedWith(field, DTO_API_HIDDEN)) {
+        decorators.apiHideProperty = true;
+      } else {
+        decorators.apiProperties = parseApiProperty(
+          {
+            ...field,
+            ...overrides,
+            isNullable: !field.isRequired,
+          },
+          {
+            type: !overrides.type,
+          },
+        );
+        if (overrides.type)
+          decorators.apiProperties.push({
+            name: 'type',
+            value: overrides.type,
+            noEncapsulation: true,
+          });
+        const typeProperty = decorators.apiProperties.find(
+          (p) => p.name === 'type',
+        );
+        if (typeProperty?.value === field.type)
+          typeProperty.value =
+            '() => ' +
+            (field.type === 'Json'
+              ? 'Object'
+              : doFullUpdate
+              ? templateHelpers.createDtoName(typeProperty.value)
+              : templateHelpers.updateDtoName(typeProperty.value));
+      }
     }
 
     if (templateHelpers.config.noDependencies) {
@@ -227,13 +230,6 @@ export const computeUpdateDtoParams = ({
 
     return [...result, mapDMMFToParsedField(field, overrides, decorators)];
   }, [] as ParsedField[]);
-
-  if (apiExtraModels.length || hasApiProperty) {
-    const destruct = [];
-    if (apiExtraModels.length) destruct.push('ApiExtraModels');
-    if (hasApiProperty) destruct.push('ApiProperty');
-    imports.unshift({ from: '@nestjs/swagger', destruct });
-  }
 
   if (classValidators.length) {
     if (classValidators.find((cv) => cv.name === 'Type')) {
@@ -256,10 +252,19 @@ export const computeUpdateDtoParams = ({
     templateHelpers.config.prismaClientImportPath,
   );
 
+  const importNestjsSwagger = makeImportsFromNestjsSwagger(
+    fields,
+    apiExtraModels,
+  );
+
   return {
     model,
     fields,
-    imports: zipImportStatementParams([...importPrismaClient, ...imports]),
+    imports: zipImportStatementParams([
+      ...importPrismaClient,
+      ...importNestjsSwagger,
+      ...imports,
+    ]),
     extraClasses,
     apiExtraModels,
   };

@@ -1,5 +1,5 @@
 import { DMMF } from '@prisma/generator-helper';
-import { IApiProperty, ParsedField } from './types';
+import { IApiProperty, ImportStatementParams, ParsedField } from './types';
 
 const ApiProps = [
   'description',
@@ -164,6 +164,10 @@ export function parseApiProperty(
  * Compose `@ApiProperty()` decorator.
  */
 export function decorateApiProperty(field: ParsedField): string {
+  if (field.apiHideProperty) {
+    return '@ApiHideProperty()\n';
+  }
+
   if (
     field.apiProperties?.length === 1 &&
     field.apiProperties[0].name === 'dummy'
@@ -187,4 +191,24 @@ export function decorateApiProperty(field: ParsedField): string {
   }
 
   return decorator;
+}
+
+export function makeImportsFromNestjsSwagger(
+  fields: ParsedField[],
+  apiExtraModels?: string[],
+): ImportStatementParams[] {
+  const hasApiProperty = fields.some((field) => field.apiProperties?.length);
+  const hasApiHideProperty = fields.some((field) => field.apiHideProperty);
+
+  if (hasApiProperty || hasApiHideProperty || apiExtraModels?.length) {
+    const destruct: string[] = [];
+
+    if (apiExtraModels?.length) destruct.push('ApiExtraModels');
+    if (hasApiHideProperty) destruct.push('ApiHideProperty');
+    if (hasApiProperty) destruct.push('ApiProperty');
+
+    return [{ from: '@nestjs/swagger', destruct }];
+  }
+
+  return [];
 }

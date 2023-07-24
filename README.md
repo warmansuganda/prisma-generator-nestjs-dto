@@ -99,6 +99,7 @@ model Post {
 - `@DtoCreateHidden` - omits field in `CreateDTO`
 - `@DtoUpdateHidden` - omits field in `UpdateDTO`
 - `@DtoEntityHidden` - omits field in `Entity`
+- `@DtoApiHidden` - adds `@ApiHideProperty` decorator to hide field in documentation, class validation remains untouched
 - `@DtoCreateOptional` - adds field **optionally** to `CreateDTO` - useful for fields that would otherwise be omitted (e.g. `@id`, `@updatedAt`)
 - `@DtoUpdateOptional` - adds field **optionally** to `UpdateDTO` - useful for fields that would otherwise be omitted (e.g. `@id`, `@updatedAt`)
 - `@DtoRelationRequired` - marks relation **required** in `Entity` although it's optional in PrismaSchema - useful when you don't want (SQL) `ON DELETE CASCADE` behavior - but your logical data schema sees this relation as required  

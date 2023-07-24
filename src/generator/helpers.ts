@@ -13,6 +13,7 @@ import type { TemplateHelpers } from './template-helpers';
 import type {
   IApiProperty,
   IClassValidator,
+  IDecorators,
   ImportStatementParams,
   Model,
   ParsedField,
@@ -118,10 +119,7 @@ export const makeImportsFromPrismaClient = (
 export const mapDMMFToParsedField = (
   field: DMMF.Field,
   overrides: Partial<DMMF.Field> = {},
-  decorators: {
-    apiProperties?: IApiProperty[];
-    classValidators?: IClassValidator[];
-  } = {},
+  decorators: IDecorators = {},
 ): ParsedField => ({
   ...field,
   ...overrides,
