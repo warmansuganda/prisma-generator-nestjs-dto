@@ -9,11 +9,19 @@ import {
   uniq,
   zipImportStatementParams,
 } from '../helpers';
-import type { ConnectDtoParams, Model } from '../types';
-import { IApiProperty, IClassValidator, ImportStatementParams } from '../types';
+import type {
+  ConnectDtoParams,
+  IClassValidator,
+  IDecorators,
+  ImportStatementParams,
+  Model,
+} from '../types';
 import { parseClassValidators } from '../class-validator';
 import { TemplateHelpers } from '../template-helpers';
-import { parseApiProperty } from '../api-decorator';
+import {
+  makeImportsFromNestjsSwagger,
+  parseApiProperty,
+} from '../api-decorator';
 
 interface ComputeConnectDtoParamsParam {
   model: Model;
@@ -23,7 +31,6 @@ export const computeConnectDtoParams = ({
   model,
   templateHelpers,
 }: ComputeConnectDtoParamsParam): ConnectDtoParams => {
-  let hasApiProperty = false;
   const imports: ImportStatementParams[] = [];
   const apiExtraModels: string[] = [];
   const extraClasses: string[] = [];
@@ -99,10 +106,7 @@ export const computeConnectDtoParams = ({
   });
 
   const fields = uniqueFields.map((field) => {
-    const decorators: {
-      apiProperties?: IApiProperty[];
-      classValidators?: IClassValidator[];
-    } = {};
+    const decorators: IDecorators = {};
 
     if (templateHelpers.config.classValidation) {
       decorators.classValidators = parseClassValidators({
@@ -124,7 +128,6 @@ export const computeConnectDtoParams = ({
         },
         { default: false },
       );
-      if (decorators.apiProperties.length) hasApiProperty = true;
     }
 
     if (templateHelpers.config.noDependencies) {
@@ -134,13 +137,6 @@ export const computeConnectDtoParams = ({
 
     return mapDMMFToParsedField(field, overrides, decorators);
   });
-
-  if (apiExtraModels.length || hasApiProperty) {
-    const destruct = [];
-    if (apiExtraModels.length) destruct.push('ApiExtraModels');
-    if (hasApiProperty) destruct.push('ApiProperty');
-    imports.unshift({ from: '@nestjs/swagger', destruct });
-  }
 
   if (classValidators.length) {
     if (classValidators.find((cv) => cv.name === 'Type')) {
@@ -163,10 +159,19 @@ export const computeConnectDtoParams = ({
     templateHelpers.config.prismaClientImportPath,
   );
 
+  const importNestjsSwagger = makeImportsFromNestjsSwagger(
+    fields,
+    apiExtraModels,
+  );
+
   return {
     model,
     fields,
-    imports: zipImportStatementParams([...importPrismaClient, ...imports]),
+    imports: zipImportStatementParams([
+      ...importPrismaClient,
+      ...importNestjsSwagger,
+      ...imports,
+    ]),
     extraClasses,
     apiExtraModels,
   };

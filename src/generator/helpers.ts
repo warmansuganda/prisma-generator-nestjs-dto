@@ -13,6 +13,7 @@ import type { TemplateHelpers } from './template-helpers';
 import type {
   IApiProperty,
   IClassValidator,
+  IDecorators,
   ImportStatementParams,
   Model,
   ParsedField,
@@ -118,10 +119,7 @@ export const makeImportsFromPrismaClient = (
 export const mapDMMFToParsedField = (
   field: DMMF.Field,
   overrides: Partial<DMMF.Field> = {},
-  decorators: {
-    apiProperties?: IApiProperty[];
-    classValidators?: IClassValidator[];
-  } = {},
+  decorators: IDecorators = {},
 ): ParsedField => ({
   ...field,
   ...overrides,
@@ -296,12 +294,17 @@ export const generateRelationInput = ({
     }
 
     if (!t.config.noDependencies) {
-      decorators.apiProperties = parseApiProperty({ ...field, isRequired });
+      decorators.apiProperties = parseApiProperty(
+        { ...field, isRequired },
+        { type: false },
+      );
       decorators.apiProperties.push({
         name: 'type',
         value: preAndPostfixedName,
         noEncapsulation: true,
       });
+      if (field.isList)
+        decorators.apiProperties.push({ name: 'isArray', value: 'true' });
     }
 
     relationInputClassProps.push({
@@ -349,12 +352,17 @@ export const generateRelationInput = ({
     }
 
     if (!t.config.noDependencies) {
-      decorators.apiProperties = parseApiProperty({ ...field, isRequired });
+      decorators.apiProperties = parseApiProperty(
+        { ...field, isRequired },
+        { type: false },
+      );
       decorators.apiProperties.push({
         name: 'type',
         value: preAndPostfixedName,
         noEncapsulation: true,
       });
+      if (field.isList)
+        decorators.apiProperties.push({ name: 'isArray', value: 'true' });
     }
 
     relationInputClassProps.push({

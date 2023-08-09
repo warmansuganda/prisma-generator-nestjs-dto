@@ -29,21 +29,21 @@ generator nestjsDto {
 
 model Product {
   /// @description Product ID
-  id              String      @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  id              String        @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   /// @Contains('Product')
   /// @description Project's name
   /// @example My first product
-  name            String      @db.VarChar(255)
-  description     String      @db.VarChar(1024)
+  name            String        @db.VarChar(255)
+  description     String        @db.VarChar(1024)
   /// @maxItems 5
-  images          Json[]      @db.Json
-  highlighted     Boolean     @default(false)
+  images          Json[]        @db.Json
+  highlighted     Boolean       @default(false)
   /// @DtoCreateOptional
   /// @description Number of reviews
   /// @minimum 9
   /// @example 12
-  reviewCount     Int         @default(0)
-  type            ProductType
+  reviewCount     Int           @default(0)
+  type            ProductType[]
   /// @ArrayNotEmpty
   /// @MinLength(3)
   tags            String[]
@@ -55,14 +55,16 @@ model Product {
   otherAttributes Json
   /// @DtoCastType(OtherType, other-package, default)
   finalAttributes Json?
+  /// @DtoUpdateHidden
   score           Float?
+  /// @DtoCreateHidden
   lastOrder       DateTime?
   /// @DtoCreateOptional
   /// @DtoUpdateOptional
-  note            String      @default("")
+  note            String        @default("")
   /// @DtoRelationIncludeId
-  categoryId      String      @db.Uuid
-  companyId       String      @db.Uuid
+  categoryId      String        @db.Uuid
+  companyId       String        @db.Uuid
 
   /// @DtoRelationRequired
   /// @DtoRelationCanCreateOnCreate
@@ -92,7 +94,7 @@ model Product {
 
   bikeId String?
   /// @DtoRelationCanConnectOnCreate
-  bike Bike? @relation(fields: [bikeId], references: [id])
+  bike   Bike?   @relation(fields: [bikeId], references: [id])
 
   @@map("products")
 }
@@ -102,6 +104,7 @@ model Category {
   name      String
   updatedAt DateTime  @updatedAt
   /// @DtoRelationCanCreateOnCreate
+  /// @DtoRelationCanConnectOnUpdate
   product   Product[]
 }
 
@@ -131,8 +134,8 @@ model User {
 }
 
 model Role {
-  id   String @id
-  name Json
+  id        String @id
+  name      Json
   attribute String
 
   companyUserRoles CompanyUserRole[]
@@ -152,13 +155,14 @@ model CompanyUserRole {
 }
 
 model Bike {
-  id String @id @default(uuid())
+  id             String    @id @default(uuid())
   chassis_number String
-  model String
-  vendor String
-  year_from Int
-  year_to Int
-  products Product[]
+  model          String
+  /// @DtoApiHidden
+  vendor         String
+  year_from      Int
+  year_to        Int
+  products       Product[]
 
   @@unique([vendor, chassis_number], map: "My_Bike_Unique")
 }

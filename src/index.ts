@@ -115,6 +115,11 @@ export const generate = async (options: GeneratorOptions) => {
     );
   }
 
+  const requiredResponseApiProperty = stringToBoolean(
+    options.generator.config.requiredResponseApiProperty,
+    true,
+  );
+
   const prismaClientGenerator = options.otherGenerators.find(
     (config) => config.name === 'client',
   );
@@ -156,6 +161,7 @@ export const generate = async (options: GeneratorOptions) => {
     outputType,
     noDependencies,
     definiteAssignmentAssertion,
+    requiredResponseApiProperty,
     prismaClientImportPath,
   });
 
@@ -174,6 +180,25 @@ export const generate = async (options: GeneratorOptions) => {
         ].join('\n'),
       };
     });
+
+    // combined index.ts in root output folder
+    if (outputToNestJsResourceStructure) {
+      const content: string[] = [];
+      Object.keys(indexCollections)
+        .sort()
+        .forEach((dirName) => {
+          const base = dirName
+            .split(/[\\\/]/)
+            .slice(flatResourceStructure ? -1 : -2);
+          content.push(
+            `export * from './${base[0]}${base[1] ? '/' + base[1] : ''}';`,
+          );
+        });
+      indexCollections[output] = {
+        fileName: path.join(output, 'index.ts'),
+        content: content.join('\n'),
+      };
+    }
   }
 
   const applyPrettier = stringToBoolean(

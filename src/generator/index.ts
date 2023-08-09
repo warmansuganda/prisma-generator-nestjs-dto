@@ -31,6 +31,7 @@ interface RunParam {
   outputType: string;
   noDependencies: boolean;
   definiteAssignmentAssertion: boolean;
+  requiredResponseApiProperty: boolean;
   prismaClientImportPath: string;
 }
 
@@ -48,6 +49,7 @@ export const run = ({
     outputType,
     noDependencies,
     definiteAssignmentAssertion,
+    requiredResponseApiProperty,
     prismaClientImportPath,
     ...preAndSuffixes
   } = options;
@@ -69,6 +71,7 @@ export const run = ({
     noDependencies,
     definiteAssignmentAssertion,
     prismaClientImportPath,
+    requiredResponseApiProperty,
     ...preAndSuffixes,
   });
   const allModels = dmmf.datamodel.models;

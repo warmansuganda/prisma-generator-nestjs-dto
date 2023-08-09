@@ -19,10 +19,11 @@ generator nestjsDto {
   classValidation                 = "true"
   noDependencies                  = "false"
   outputType                      = "class"
+  requiredResponseApiProperty     = "false"
 }
 
 model Product {
-  id     String  @id @default(auto()) @map("_id") @db.ObjectId
+  id     String   @id @default(auto()) @map("_id") @db.ObjectId
   /// @description name
   name   String
   /// @DtoTypeFullUpdate
@@ -34,9 +35,12 @@ model Product {
 type Photo {
   height Int
   /// @description Image width
-  /// @minimum 9
+  /// @minimum 200
+  /// @Min(200)
   width  Int
+  /// @DtoApiHidden
   url    String
+  camera Float[]
   file   File?
 }
 

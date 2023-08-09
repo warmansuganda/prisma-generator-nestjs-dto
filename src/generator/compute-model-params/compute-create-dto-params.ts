@@ -1,6 +1,8 @@
 import slash from 'slash';
 import path from 'node:path';
 import {
+  DTO_API_HIDDEN,
+  DTO_CREATE_HIDDEN,
   DTO_CREATE_OPTIONAL,
   DTO_RELATION_CAN_CONNECT_ON_CREATE,
   DTO_RELATION_CAN_CREATE_ON_CREATE,
@@ -38,10 +40,13 @@ import type {
   ImportStatementParams,
   ParsedField,
   IClassValidator,
+  IDecorators,
 } from '../types';
-import { parseApiProperty } from '../api-decorator';
+import {
+  makeImportsFromNestjsSwagger,
+  parseApiProperty,
+} from '../api-decorator';
 import { parseClassValidators } from '../class-validator';
-import { IApiProperty } from '../types';
 
 interface ComputeCreateDtoParamsParam {
   model: Model;
@@ -53,7 +58,6 @@ export const computeCreateDtoParams = ({
   allModels,
   templateHelpers,
 }: ComputeCreateDtoParamsParam): CreateDtoParams => {
-  let hasApiProperty = false;
   const imports: ImportStatementParams[] = [];
   const apiExtraModels: string[] = [];
   const extraClasses: string[] = [];
@@ -65,10 +69,7 @@ export const computeCreateDtoParams = ({
   const fields = model.fields.reduce((result, field) => {
     const { name } = field;
     const overrides: Partial<DMMF.Field> = {};
-    const decorators: {
-      apiProperties?: IApiProperty[];
-      classValidators?: IClassValidator[];
-    } = {};
+    const decorators: IDecorators = {};
 
     if (
       isAnnotatedWith(field, DTO_RELATION_INCLUDE_ID) &&
@@ -77,6 +78,7 @@ export const computeCreateDtoParams = ({
       field.isReadOnly = false;
 
     if (isReadOnly(field)) return result;
+    if (isAnnotatedWith(field, DTO_CREATE_HIDDEN)) return result;
     if (isRelation(field)) {
       if (!isAnnotatedWithOneOf(field, DTO_RELATION_MODIFIERS_ON_CREATE)) {
         return result;
@@ -190,16 +192,28 @@ export const computeCreateDtoParams = ({
     }
 
     if (!templateHelpers.config.noDependencies) {
-      decorators.apiProperties = parseApiProperty(field, {
-        type: !overrides.type,
-      });
-      if (overrides.type)
-        decorators.apiProperties.push({
-          name: 'type',
-          value: overrides.type,
-          noEncapsulation: true,
+      if (isAnnotatedWith(field, DTO_API_HIDDEN)) {
+        decorators.apiHideProperty = true;
+      } else {
+        decorators.apiProperties = parseApiProperty(field, {
+          type: !overrides.type,
         });
-      if (decorators.apiProperties.length) hasApiProperty = true;
+        if (overrides.type)
+          decorators.apiProperties.push({
+            name: 'type',
+            value: overrides.type,
+            noEncapsulation: true,
+          });
+        const typeProperty = decorators.apiProperties.find(
+          (p) => p.name === 'type',
+        );
+        if (typeProperty?.value === field.type)
+          typeProperty.value =
+            '() => ' +
+            (field.type === 'Json'
+              ? 'Object'
+              : templateHelpers.createDtoName(typeProperty.value));
+      }
     }
 
     if (templateHelpers.config.noDependencies) {
@@ -209,13 +223,6 @@ export const computeCreateDtoParams = ({
 
     return [...result, mapDMMFToParsedField(field, overrides, decorators)];
   }, [] as ParsedField[]);
-
-  if (apiExtraModels.length || hasApiProperty) {
-    const destruct = [];
-    if (apiExtraModels.length) destruct.push('ApiExtraModels');
-    if (hasApiProperty) destruct.push('ApiProperty');
-    imports.unshift({ from: '@nestjs/swagger', destruct });
-  }
 
   if (classValidators.length) {
     if (classValidators.find((cv) => cv.name === 'Type')) {
@@ -238,10 +245,19 @@ export const computeCreateDtoParams = ({
     templateHelpers.config.prismaClientImportPath,
   );
 
+  const importNestjsSwagger = makeImportsFromNestjsSwagger(
+    fields,
+    apiExtraModels,
+  );
+
   return {
     model,
     fields,
-    imports: zipImportStatementParams([...importPrismaClient, ...imports]),
+    imports: zipImportStatementParams([
+      ...importPrismaClient,
+      ...importNestjsSwagger,
+      ...imports,
+    ]),
     extraClasses,
     apiExtraModels,
   };

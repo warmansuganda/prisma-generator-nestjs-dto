@@ -1,6 +1,10 @@
 import slash from 'slash';
 import path from 'node:path';
-import { DTO_ENTITY_HIDDEN, DTO_RELATION_INCLUDE_ID } from '../annotations';
+import {
+  DTO_API_HIDDEN,
+  DTO_ENTITY_HIDDEN,
+  DTO_RELATION_INCLUDE_ID,
+} from '../annotations';
 import { isAnnotatedWith, isRelation, isType } from '../field-classifiers';
 import {
   getRelationScalars,
@@ -17,9 +21,12 @@ import type {
   ImportStatementParams,
   ParsedField,
   PlainDtoParams,
+  IDecorators,
 } from '../types';
-import { parseApiProperty } from '../api-decorator';
-import { IApiProperty } from '../types';
+import {
+  makeImportsFromNestjsSwagger,
+  parseApiProperty,
+} from '../api-decorator';
 
 interface ComputePlainDtoParamsParam {
   model: Model;
@@ -31,7 +38,6 @@ export const computePlainDtoParams = ({
   allModels,
   templateHelpers,
 }: ComputePlainDtoParamsParam): PlainDtoParams => {
-  let hasApiProperty = false;
   const imports: ImportStatementParams[] = [];
   const apiExtraModels: string[] = [];
 
@@ -44,7 +50,7 @@ export const computePlainDtoParams = ({
       isRequired: true,
       isNullable: !field.isRequired,
     };
-    const decorators: { apiProperties?: IApiProperty[] } = {};
+    const decorators: IDecorators = {};
 
     if (isAnnotatedWith(field, DTO_ENTITY_HIDDEN)) return result;
 
@@ -93,11 +99,29 @@ export const computePlainDtoParams = ({
     }
 
     if (!templateHelpers.config.noDependencies) {
-      decorators.apiProperties = parseApiProperty(
-        { ...field, isRequired: false, isNullable: !field.isRequired },
-        { default: false },
-      );
-      if (decorators.apiProperties.length) hasApiProperty = true;
+      if (isAnnotatedWith(field, DTO_API_HIDDEN)) {
+        decorators.apiHideProperty = true;
+      } else {
+        decorators.apiProperties = parseApiProperty(
+          {
+            ...field,
+            isRequired: templateHelpers.config.requiredResponseApiProperty
+              ? !!overrides.isRequired
+              : false,
+            isNullable: !field.isRequired,
+          },
+          { default: false },
+        );
+        const typeProperty = decorators.apiProperties.find(
+          (p) => p.name === 'type',
+        );
+        if (typeProperty?.value === field.type)
+          typeProperty.value =
+            '() => ' +
+            (field.type === 'Json'
+              ? 'Object'
+              : templateHelpers.plainDtoName(typeProperty.value));
+      }
     }
 
     if (templateHelpers.config.noDependencies) {
@@ -108,22 +132,24 @@ export const computePlainDtoParams = ({
     return [...result, mapDMMFToParsedField(field, overrides, decorators)];
   }, [] as ParsedField[]);
 
-  if (apiExtraModels.length || hasApiProperty) {
-    const destruct = [];
-    if (apiExtraModels.length) destruct.push('ApiExtraModels');
-    if (hasApiProperty) destruct.push('ApiProperty');
-    imports.unshift({ from: '@nestjs/swagger', destruct });
-  }
-
   const importPrismaClient = makeImportsFromPrismaClient(
     fields,
     templateHelpers.config.prismaClientImportPath,
   );
 
+  const importNestjsSwagger = makeImportsFromNestjsSwagger(
+    fields,
+    apiExtraModels,
+  );
+
   return {
     model,
     fields,
-    imports: zipImportStatementParams([...importPrismaClient, ...imports]),
+    imports: zipImportStatementParams([
+      ...importPrismaClient,
+      ...importNestjsSwagger,
+      ...imports,
+    ]),
     apiExtraModels,
   };
 };
