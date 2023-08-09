@@ -225,6 +225,7 @@ interface GenerateRelationInputParam {
     | TemplateHelpers['updateDtoName'];
   canCreateAnnotation: RegExp;
   canConnectAnnotation: RegExp;
+  canDisconnectAnnotation?: RegExp;
 }
 export const generateRelationInput = ({
   field,
@@ -234,6 +235,7 @@ export const generateRelationInput = ({
   preAndSuffixClassName,
   canCreateAnnotation,
   canConnectAnnotation,
+  canDisconnectAnnotation,
 }: GenerateRelationInputParam) => {
   const relationInputClassProps: Array<
     Pick<ParsedField, 'name' | 'type' | 'apiProperties' | 'classValidators'>
@@ -246,7 +248,15 @@ export const generateRelationInput = ({
 
   const createRelation = isAnnotatedWith(field, canCreateAnnotation);
   const connectRelation = isAnnotatedWith(field, canConnectAnnotation);
-  const isRequired = !(createRelation && connectRelation);
+  const disconnectRelation = canDisconnectAnnotation
+    ? isAnnotatedWith(field, canDisconnectAnnotation)
+    : undefined;
+  // should the validation require the relation field to exist
+  // this should only be true in cases where only one relation field is generated
+  // for multiple relaiton fields, e.g. create AND connect, each should be optional
+  const isRequired =
+    [createRelation, connectRelation, disconnectRelation].filter((v) => v)
+      .length === 1;
 
   if (createRelation) {
     const preAndPostfixedName = t.createDtoName(field.type);
@@ -353,6 +363,102 @@ export const generateRelationInput = ({
       apiProperties: decorators.apiProperties,
       classValidators: decorators.classValidators,
     });
+  }
+
+  if (disconnectRelation) {
+    if (field.isRequired && !field.isList) {
+      throw new Error(
+        `The disconnect annotation is not supported for required field '${model.name}.${field.name}'`,
+      );
+    }
+
+    if (!field.isList) {
+      const decorators: {
+        apiProperties?: IApiProperty[];
+        classValidators?: IClassValidator[];
+      } = {};
+
+      if (t.config.classValidation) {
+        decorators.classValidators = parseClassValidators(
+          { ...field, isRequired },
+          'Boolean',
+        );
+        concatUniqueIntoArray(
+          decorators.classValidators,
+          classValidators,
+          'name',
+        );
+      }
+
+      if (!t.config.noDependencies) {
+        decorators.apiProperties = parseApiProperty({ ...field, isRequired });
+        decorators.apiProperties.push({
+          name: 'type',
+          value: 'Boolean',
+          noEncapsulation: true,
+        });
+      }
+
+      relationInputClassProps.push({
+        name: 'disconnect',
+        type: 'boolean',
+        apiProperties: decorators.apiProperties,
+        classValidators: decorators.classValidators,
+      });
+    } else {
+      const preAndPostfixedName = t.connectDtoName(field.type);
+      apiExtraModels.push(preAndPostfixedName);
+      const modelToImportFrom = allModels.find(
+        ({ name }) => name === field.type,
+      );
+
+      if (!modelToImportFrom)
+        throw new Error(
+          `related model '${field.type}' for '${model.name}.${field.name}' not found`,
+        );
+
+      imports.push({
+        from: slash(
+          `${getRelativePath(model.output.dto, modelToImportFrom.output.dto)}${
+            path.sep
+          }${t.connectDtoFilename(field.type)}`,
+        ),
+        destruct: [preAndPostfixedName],
+      });
+
+      const decorators: {
+        apiProperties?: IApiProperty[];
+        classValidators?: IClassValidator[];
+      } = {};
+
+      if (t.config.classValidation) {
+        decorators.classValidators = parseClassValidators(
+          { ...field, isRequired },
+          preAndPostfixedName,
+        );
+        concatUniqueIntoArray(
+          decorators.classValidators,
+          classValidators,
+          'name',
+        );
+      }
+
+      if (!t.config.noDependencies) {
+        decorators.apiProperties = parseApiProperty({ ...field, isRequired });
+        decorators.apiProperties.push({
+          name: 'type',
+          value: preAndPostfixedName,
+          noEncapsulation: true,
+        });
+      }
+
+      relationInputClassProps.push({
+        name: 'disconnect',
+        type: preAndPostfixedName,
+        apiProperties: decorators.apiProperties,
+        classValidators: decorators.classValidators,
+      });
+    }
   }
 
   if (!relationInputClassProps.length) {
