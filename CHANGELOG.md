@@ -5,7 +5,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.18.0] - 2023-08-10
+
+### Added
+
+- add `@DtoCreateHidden` and `@DtoUpdateHidden` annotation [#21][i21]
+- add `@DtoApiHidden` annotation to add `@ApiHideProperty` decorator [#23][i23]
+- add `DtoRelationCanDisconnectOnUpdate` annotation [#25][pr25] (thanks to [@m1212e](https://github.com/m1212e))
+
+### Changed
+
+- Use default ApiProperty required behavior [#18][i18]. Use `requiredResponseApiProperty = "false"` parameter for the old behavior.
+- create a combined index.ts in root output folder [#22][i22]
+- upgrade to prisma@4.16.2 now parses triple-slash comments on composite types
+
+### Fixed
+
+- add type to @ApiProperty if field is a list [#20][i20]
+
 ## [1.17.4] - 2023-03-04
+
+### Fixed
 
 - fix connect and create class names that get too many suffixes if `dtoSuffix` does not end with `dto` [#17][i17]
 
@@ -17,7 +37,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## [1.17.2] - 2023-02-10
 
-### Fixes
+### Fixed
 
 - prisma imports for ConnectDTOs
 
@@ -222,3 +242,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 [pr15]: https://github.com/Brakebein/prisma-generator-nestjs-dto/pull/15
 [pr16]: https://github.com/Brakebein/prisma-generator-nestjs-dto/pull/16
 [i17]: https://github.com/Brakebein/prisma-generator-nestjs-dto/issues/17
+[i18]: https://github.com/Brakebein/prisma-generator-nestjs-dto/issues/18
+[i20]: https://github.com/Brakebein/prisma-generator-nestjs-dto/issues/20
+[i21]: https://github.com/Brakebein/prisma-generator-nestjs-dto/issues/21
+[i22]: https://github.com/Brakebein/prisma-generator-nestjs-dto/issues/22
+[i23]: https://github.com/Brakebein/prisma-generator-nestjs-dto/issues/23
+[pr25]: https://github.com/Brakebein/prisma-generator-nestjs-dto/pull/25
