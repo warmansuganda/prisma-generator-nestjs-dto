@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.18.2] - 2023-08-30
+
+### Fixed
+
+- prevent double type field in api properties [#29][pr29]
+
 ## [1.18.0] - 2023-08-10
 
 ### Added
@@ -248,3 +254,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 [i22]: https://github.com/Brakebein/prisma-generator-nestjs-dto/issues/22
 [i23]: https://github.com/Brakebein/prisma-generator-nestjs-dto/issues/23
 [pr25]: https://github.com/Brakebein/prisma-generator-nestjs-dto/pull/25
+[pr29]: https://github.com/Brakebein/prisma-generator-nestjs-dto/pull/29
