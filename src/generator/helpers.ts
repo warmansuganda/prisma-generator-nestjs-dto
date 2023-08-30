@@ -399,7 +399,10 @@ export const generateRelationInput = ({
       }
 
       if (!t.config.noDependencies) {
-        decorators.apiProperties = parseApiProperty({ ...field, isRequired });
+        decorators.apiProperties = parseApiProperty(
+          { ...field, isRequired },
+          { type: false },
+        );
         decorators.apiProperties.push({
           name: 'type',
           value: 'Boolean',
@@ -452,7 +455,10 @@ export const generateRelationInput = ({
       }
 
       if (!t.config.noDependencies) {
-        decorators.apiProperties = parseApiProperty({ ...field, isRequired });
+        decorators.apiProperties = parseApiProperty(
+          { ...field, isRequired },
+          { type: false },
+        );
         decorators.apiProperties.push({
           name: 'type',
           value: preAndPostfixedName,
