@@ -47,4 +47,6 @@ type Photo {
 type File {
   path     String
   mimeType String
+  /// @DtoCastType(number[][][])
+  nested   Json
 }
