@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.18.4] - 2023-09-19
+
+### Fixed
+
+- add lazy resolver for complex types to avoid circular dependency issues [#31][i31]
+
 ## [1.18.3] - 2023-09-14
 
 ### Changed
@@ -261,3 +267,4 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 [i23]: https://github.com/Brakebein/prisma-generator-nestjs-dto/issues/23
 [pr25]: https://github.com/Brakebein/prisma-generator-nestjs-dto/pull/25
 [pr29]: https://github.com/Brakebein/prisma-generator-nestjs-dto/pull/29
+[i31]: https://github.com/Brakebein/prisma-generator-nestjs-dto/issues/31
