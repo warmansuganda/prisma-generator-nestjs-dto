@@ -109,8 +109,8 @@ export function parseApiProperty(
 
   if (incl.type) {
     const scalarFormat = PrismaScalarToFormat[field.type];
-    if (field.isList) {
-      if (scalarFormat) {
+    if (scalarFormat) {
+      if (field.isList) {
         properties.push({
           name: 'type',
           value: scalarFormat.type,
@@ -118,19 +118,22 @@ export function parseApiProperty(
         if (scalarFormat.format) {
           properties.push({ name: 'format', value: scalarFormat.format });
         }
-      } else if (field.kind !== 'enum') {
-        properties.push({
-          name: 'type',
-          value: field.type,
-          noEncapsulation: true,
-        });
+        properties.push({ name: 'isArray', value: 'true' });
+      } else if (scalarFormat.format) {
+        properties.push(
+          { name: 'type', value: scalarFormat.type },
+          { name: 'format', value: scalarFormat.format },
+        );
       }
-      properties.push({ name: 'isArray', value: 'true' });
-    } else if (scalarFormat?.format) {
-      properties.push(
-        { name: 'type', value: scalarFormat.type },
-        { name: 'format', value: scalarFormat.format },
-      );
+    } else if (field.kind !== 'enum') {
+      properties.push({
+        name: 'type',
+        value: field.type,
+        noEncapsulation: true,
+      });
+      if (field.isList) {
+        properties.push({ name: 'isArray', value: 'true' });
+      }
     }
   }
 
