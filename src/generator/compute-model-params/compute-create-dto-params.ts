@@ -138,6 +138,9 @@ export const computeCreateDtoParams = ({
     if (isDtoOptional) {
       overrides.isRequired = false;
     }
+    if (!field.isRequired) {
+      overrides.isNullable = true;
+    }
 
     if (isType(field)) {
       // don't try to import the class we're preparing params for
