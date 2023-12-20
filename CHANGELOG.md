@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.19.0] - 2023-12-20
+
+### Changed
+
+- allow `null` for optional fields in CreateDto [#27][pr27] [#34][i34]
+
 ## [1.18.4] - 2023-09-19
 
 ### Fixed
@@ -268,3 +274,5 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 [pr25]: https://github.com/Brakebein/prisma-generator-nestjs-dto/pull/25
 [pr29]: https://github.com/Brakebein/prisma-generator-nestjs-dto/pull/29
 [i31]: https://github.com/Brakebein/prisma-generator-nestjs-dto/issues/31
+[pr27]: https://github.com/Brakebein/prisma-generator-nestjs-dto/pull/27
+[i34]: https://github.com/Brakebein/prisma-generator-nestjs-dto/issues/34
