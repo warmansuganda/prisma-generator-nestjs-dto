@@ -220,8 +220,8 @@ export const computeUpdateDtoParams = ({
             (field.type === 'Json'
               ? 'Object'
               : doFullUpdate
-              ? templateHelpers.createDtoName(typeProperty.value)
-              : templateHelpers.updateDtoName(typeProperty.value));
+                ? templateHelpers.createDtoName(typeProperty.value)
+                : templateHelpers.updateDtoName(typeProperty.value));
       }
     }
 

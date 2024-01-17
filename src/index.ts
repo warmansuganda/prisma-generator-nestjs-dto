@@ -208,7 +208,7 @@ export const generate = async (options: GeneratorOptions) => {
 
   let prettierConfig: prettier.Options = {};
   if (applyPrettier) {
-    const prettierConfigFile = await prettier.resolveConfigFile(process.cwd());
+    const prettierConfigFile = await prettier.resolveConfigFile();
     if (!prettierConfigFile) {
       logger('Stylizing output DTOs with the default Prettier config.');
     } else {
@@ -226,7 +226,7 @@ export const generate = async (options: GeneratorOptions) => {
     }
 
     // Ensures that there are no parsing issues
-    // We know that the output files are always Typescript
+    // We know that the output files are always TypeScript
     prettierConfig.parser = 'typescript';
   }
 
@@ -236,7 +236,9 @@ export const generate = async (options: GeneratorOptions) => {
       .map(async ({ fileName, content }) => {
         await makeDir(path.dirname(fileName));
 
-        if (applyPrettier) content = prettier.format(content, prettierConfig);
+        if (applyPrettier) {
+          content = await prettier.format(content, prettierConfig);
+        }
 
         return fs.writeFile(fileName, content);
       }),

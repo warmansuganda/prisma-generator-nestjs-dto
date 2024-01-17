@@ -40,8 +40,11 @@ export const scalarToTS = (scalar: string, useInputTypes = false): string => {
 
 export const echo = (input: string) => input;
 
-export const when = (condition: any, thenTemplate: string, elseTemplate = '') =>
-  condition ? thenTemplate : elseTemplate;
+export const when = (
+  condition: any,
+  thenTemplate: string,
+  elseTemplate = '',
+) => (condition ? thenTemplate : elseTemplate);
 
 export const unless = (
   condition: any,
@@ -190,12 +193,12 @@ export const makeHelpers = ({
       (field.kind === 'scalar'
         ? scalarToTS(field.type, toInputType)
         : field.kind === 'enum' ||
-          field.kind === 'relation-input' ||
-          field.pureType === true
-        ? field.type
-        : field.relationName
-        ? entityName(field.type)
-        : dtoName(field.type, doFullUpdate ? 'create' : dtoType))
+            field.kind === 'relation-input' ||
+            field.pureType === true
+          ? field.type
+          : field.relationName
+            ? entityName(field.type)
+            : dtoName(field.type, doFullUpdate ? 'create' : dtoType))
     }${when(field.isList, '[]')}`;
   };
 
