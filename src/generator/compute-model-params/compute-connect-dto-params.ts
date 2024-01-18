@@ -128,6 +128,11 @@ export const computeConnectDtoParams = ({
         },
         { default: false },
       );
+      const typeProperty = decorators.apiProperties.find(
+        (p) => p.name === 'type',
+      );
+      if (typeProperty?.value === field.type && field.type === 'Json')
+        typeProperty.value = '() => Object';
     }
 
     if (templateHelpers.config.noDependencies) {

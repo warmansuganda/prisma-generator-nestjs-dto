@@ -552,6 +552,11 @@ export const generateUniqueInput = ({
 
     if (!t.config.noDependencies) {
       decorators.apiProperties = parseApiProperty({ ...field, ...overrides });
+      const typeProperty = decorators.apiProperties.find(
+        (p) => p.name === 'type',
+      );
+      if (typeProperty?.value === field.type && field.type === 'Json')
+        typeProperty.value = '() => Object';
     }
 
     if (t.config.noDependencies) {
