@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.19.2] - 2024-01-18
+
+### Fixed
+
+- fix ApiProperty type in ConnectDto if field is JsonValue 
+
 ## [1.19.1] - 2024-01-17
 
 - updated prettier and eslint
