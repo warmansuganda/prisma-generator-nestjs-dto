@@ -216,7 +216,12 @@ export const makeHelpers = ({
       when(definiteAssignmentAssertion, '!'),
     )}: ${fieldType(field, dtoType, useInputTypes)} ${when(
       field.isNullable,
-      ' | null',
+      ' | ' +
+        when(
+          fieldType(field, dtoType, useInputTypes) === 'Prisma.InputJsonValue',
+          'Prisma.NullableJsonNullValueInput',
+          'null',
+        ),
     )};`;
 
   const fieldsToDtoProps = (

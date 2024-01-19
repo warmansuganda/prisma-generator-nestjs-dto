@@ -55,6 +55,7 @@ model Product {
   otherAttributes Json
   /// @DtoCastType(OtherType, other-package, default)
   finalAttributes Json?
+  optAttributes   Json?
   /// @DtoUpdateHidden
   score           Float?
   /// @DtoCreateHidden
