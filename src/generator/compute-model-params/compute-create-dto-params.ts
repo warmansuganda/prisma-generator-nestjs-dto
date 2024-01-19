@@ -4,9 +4,9 @@ import {
   DTO_API_HIDDEN,
   DTO_CREATE_HIDDEN,
   DTO_CREATE_OPTIONAL,
+  DTO_CREATE_VALIDATE_IF,
   DTO_RELATION_CAN_CONNECT_ON_CREATE,
   DTO_RELATION_CAN_CREATE_ON_CREATE,
-  DTO_RELATION_CAN_DISCONNECT_ON_UPDATE,
   DTO_RELATION_INCLUDE_ID,
   DTO_RELATION_MODIFIERS_ON_CREATE,
   DTO_RELATION_REQUIRED,
@@ -180,6 +180,11 @@ export const computeCreateDtoParams = ({
     }
 
     if (templateHelpers.config.classValidation) {
+      if (isAnnotatedWith(field, DTO_CREATE_VALIDATE_IF)) {
+        overrides.documentation = (
+          overrides.documentation ?? field.documentation
+        )?.replace(DTO_CREATE_VALIDATE_IF, '@ValidateIf');
+      }
       decorators.classValidators = parseClassValidators(
         {
           ...field,

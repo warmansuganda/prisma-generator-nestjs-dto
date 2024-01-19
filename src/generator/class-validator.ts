@@ -98,6 +98,7 @@ const validatorsWithParams = new Map<string, string>([
   ['IsHash', "'md4'"],
   ['IsISSN', '{}'],
   ['IsInstance', "''"],
+  ['ValidateIf', ''],
 ]);
 
 const arrayValidators = [

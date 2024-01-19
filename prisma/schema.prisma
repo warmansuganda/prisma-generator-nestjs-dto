@@ -167,3 +167,16 @@ model Bike {
 
   @@unique([vendor, chassis_number], map: "My_Bike_Unique")
 }
+
+model Post {
+  id             String    @id
+  otherProperty String
+
+  /// @DtoCreateValidateIf(o => o.otherProperty)
+  /// @IsNotEmpty()
+  exampleCreate String
+
+  /// @DtoUpdateValidateIf(o => o.otherProperty === 'someValue')
+  /// @Contains('something')
+  exampleUpdate String
+}
