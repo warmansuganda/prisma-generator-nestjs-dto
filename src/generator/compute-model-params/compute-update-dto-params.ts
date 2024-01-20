@@ -10,6 +10,7 @@ import {
   DTO_TYPE_FULL_UPDATE,
   DTO_UPDATE_HIDDEN,
   DTO_UPDATE_OPTIONAL,
+  DTO_UPDATE_VALIDATE_IF,
 } from '../annotations';
 import {
   isAnnotatedWith,
@@ -174,6 +175,11 @@ export const computeUpdateDtoParams = ({
     }
 
     if (templateHelpers.config.classValidation) {
+      if (isAnnotatedWith(field, DTO_UPDATE_VALIDATE_IF)) {
+        overrides.documentation = (
+          overrides.documentation ?? field.documentation
+        )?.replace(DTO_UPDATE_VALIDATE_IF, '@ValidateIf');
+      }
       decorators.classValidators = parseClassValidators(
         {
           ...field,
