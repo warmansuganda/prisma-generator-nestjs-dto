@@ -5,6 +5,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.20.0] - 2024-01-20
+
+### Added
+
+- support `@ValidateIf()` decorator
+- add `@DtoCreateValidateIf(...)` and `@DtoUpdateValidateIf(...)` decorators [#36][pr36] [#37][i37] (thanks to [iamciroja](https://github.com/iamciroja))
+
 ## [1.19.3] - 2024-01-19
 
 ### Fixed
@@ -292,3 +299,5 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 [i31]: https://github.com/Brakebein/prisma-generator-nestjs-dto/issues/31
 [pr27]: https://github.com/Brakebein/prisma-generator-nestjs-dto/pull/27
 [i34]: https://github.com/Brakebein/prisma-generator-nestjs-dto/issues/34
+[pr36]: https://github.com/Brakebein/prisma-generator-nestjs-dto/pull/36
+[i37]: https://github.com/Brakebein/prisma-generator-nestjs-dto/issues/37

@@ -169,8 +169,11 @@ model Bike {
 }
 
 model Post {
-  id             String    @id
+  id            String @id
   otherProperty String
+
+  /// @ValidateIf(o => o.otherProperty === 'value')
+  general String
 
   /// @DtoCreateValidateIf(o => o.otherProperty)
   /// @IsNotEmpty()
