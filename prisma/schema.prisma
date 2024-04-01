@@ -169,8 +169,10 @@ model Bike {
 }
 
 model Post {
-  id            String @id
-  otherProperty String
+  id String @id
+
+  /// @DtoIgnoreOnConnect
+  otherProperty String @unique
 
   /// @ValidateIf(o => o.otherProperty === 'value')
   general String

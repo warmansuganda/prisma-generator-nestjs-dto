@@ -37,3 +37,4 @@ export const DTO_TYPE_FULL_UPDATE = /@DtoTypeFullUpdate/;
 export const DTO_CAST_TYPE = /@DtoCastType/;
 export const DTO_CREATE_VALIDATE_IF = /@DtoCreateValidateIf/;
 export const DTO_UPDATE_VALIDATE_IF = /@DtoUpdateValidateIf/;
+export const DTO_IGNORE_ON_CONNECT = /@DtoIgnoreOnConnect/;

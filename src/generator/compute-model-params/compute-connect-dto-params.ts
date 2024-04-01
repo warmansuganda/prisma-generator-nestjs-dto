@@ -1,5 +1,5 @@
 import type { DMMF } from '@prisma/generator-helper';
-import { isId, isUnique } from '../field-classifiers';
+import { isAnnotatedWith, isId, isUnique } from '../field-classifiers';
 import {
   concatIntoArray,
   concatUniqueIntoArray,
@@ -22,6 +22,7 @@ import {
   makeImportsFromNestjsSwagger,
   parseApiProperty,
 } from '../api-decorator';
+import { DTO_IGNORE_ON_CONNECT } from '../annotations';
 
 interface ComputeConnectDtoParamsParam {
   model: Model;
@@ -36,8 +37,13 @@ export const computeConnectDtoParams = ({
   const extraClasses: string[] = [];
   const classValidators: IClassValidator[] = [];
 
-  const idFields = model.fields.filter((field) => isId(field));
-  const isUniqueFields = model.fields.filter((field) => isUnique(field));
+  const idFields = model.fields.filter(
+    (field) => !isAnnotatedWith(field, DTO_IGNORE_ON_CONNECT) && isId(field),
+  );
+  const isUniqueFields = model.fields.filter(
+    (field) =>
+      !isAnnotatedWith(field, DTO_IGNORE_ON_CONNECT) && isUnique(field),
+  );
 
   const uniqueCompoundFields: {
     name: string | null;
