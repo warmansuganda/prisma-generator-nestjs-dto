@@ -22,7 +22,7 @@ import {
   makeImportsFromNestjsSwagger,
   parseApiProperty,
 } from '../api-decorator';
-import { DTO_IGNORE_ON_CONNECT } from '../annotations';
+import { DTO_CONNECT_HIDDEN } from '../annotations';
 
 interface ComputeConnectDtoParamsParam {
   model: Model;
@@ -38,11 +38,10 @@ export const computeConnectDtoParams = ({
   const classValidators: IClassValidator[] = [];
 
   const idFields = model.fields.filter(
-    (field) => !isAnnotatedWith(field, DTO_IGNORE_ON_CONNECT) && isId(field),
+    (field) => !isAnnotatedWith(field, DTO_CONNECT_HIDDEN) && isId(field),
   );
   const isUniqueFields = model.fields.filter(
-    (field) =>
-      !isAnnotatedWith(field, DTO_IGNORE_ON_CONNECT) && isUnique(field),
+    (field) => !isAnnotatedWith(field, DTO_CONNECT_HIDDEN) && isUnique(field),
   );
 
   const uniqueCompoundFields: {

@@ -171,7 +171,7 @@ model Bike {
 model Post {
   id String @id
 
-  /// @DtoIgnoreOnConnect
+  /// @DtoConnectHidden
   otherProperty String @unique
 
   /// @ValidateIf(o => o.otherProperty === 'value')
