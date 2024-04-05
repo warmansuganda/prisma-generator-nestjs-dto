@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.21.0] - 2024-04-05
+
+### Added
+
+- add `@DtoConnectHidden` annotation [#28][i28]
+
+### Changed
+
+- `type` in `@ApiProperty` is now always explicitly set [#38][i38]
+
 ## [1.20.0] - 2024-01-20
 
 ### Added
@@ -298,6 +308,8 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 [pr29]: https://github.com/Brakebein/prisma-generator-nestjs-dto/pull/29
 [i31]: https://github.com/Brakebein/prisma-generator-nestjs-dto/issues/31
 [pr27]: https://github.com/Brakebein/prisma-generator-nestjs-dto/pull/27
+[i28]: https://github.com/Brakebein/prisma-generator-nestjs-dto/issues/28
 [i34]: https://github.com/Brakebein/prisma-generator-nestjs-dto/issues/34
 [pr36]: https://github.com/Brakebein/prisma-generator-nestjs-dto/pull/36
 [i37]: https://github.com/Brakebein/prisma-generator-nestjs-dto/issues/37
+[i38]: https://github.com/Brakebein/prisma-generator-nestjs-dto/issues/38
