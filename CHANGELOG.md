@@ -5,6 +5,16 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.22.0] - 2024-05-31
+
+### Added
+
+- add `@DtoUpdateRequired` annotation [#40][i40] (thanks to [KoenLemmen](https://github.com/KoenLemmen))
+
+### Fixed
+
+- fix missing lazy resolver for complex types [#39][i39]
+
 ## [1.21.0] - 2024-04-05
 
 ### Added
@@ -313,3 +323,5 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 [pr36]: https://github.com/Brakebein/prisma-generator-nestjs-dto/pull/36
 [i37]: https://github.com/Brakebein/prisma-generator-nestjs-dto/issues/37
 [i38]: https://github.com/Brakebein/prisma-generator-nestjs-dto/issues/38
+[i39]: https://github.com/Brakebein/prisma-generator-nestjs-dto/issues/39
+[i40]: https://github.com/Brakebein/prisma-generator-nestjs-dto/issues/40
