@@ -387,10 +387,12 @@ export const generateRelationInput = ({
       } = {};
 
       if (t.config.classValidation) {
-        decorators.classValidators = parseClassValidators(
-          { ...field, isRequired },
-          'Boolean',
-        );
+        decorators.classValidators = parseClassValidators({
+          ...field,
+          isRequired,
+          type: 'Boolean',
+          kind: 'scalar',
+        });
         concatUniqueIntoArray(
           decorators.classValidators,
           classValidators,
@@ -405,8 +407,8 @@ export const generateRelationInput = ({
         );
         decorators.apiProperties.push({
           name: 'type',
-          value: 'Boolean',
-          noEncapsulation: true,
+          value: 'boolean',
+          noEncapsulation: false,
         });
       }
 
