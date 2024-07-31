@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [1.23.0] - 2024-07-31
+
+### Added
+
+- add `outputApiPropertyType` flag to solve issues with SWC [#39][i39] (thanks to [KoenLemmen](https://github.com/KoenLemmen))
+- add `generateFileTypes` config to generate only DTO files, only Entity files, or both [#42][i42]
+
+### Fixed
+
+- fix wrong class-validator decorator on disconnect property [#44][i44] 
+
 ## [1.22.0] - 2024-05-31
 
 ### Added
@@ -325,3 +336,6 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 [i38]: https://github.com/Brakebein/prisma-generator-nestjs-dto/issues/38
 [i39]: https://github.com/Brakebein/prisma-generator-nestjs-dto/issues/39
 [i40]: https://github.com/Brakebein/prisma-generator-nestjs-dto/issues/40
+[i42]: https://github.com/Brakebein/prisma-generator-nestjs-dto/issues/42
+[pr43]: https://github.com/Brakebein/prisma-generator-nestjs-dto/pull/43
+[i44]: https://github.com/Brakebein/prisma-generator-nestjs-dto/issues/44
