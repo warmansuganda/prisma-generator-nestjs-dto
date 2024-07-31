@@ -63,9 +63,7 @@
     "make-dir": "^3.1.0",
     "prettier": "^3.0.0",
     "prisma": "^4.16.2",
-    "slash": "^3.0.0",
-    "tar": "^6.1.12",
-    "ts-toolbelt": "^9.6.0"
+    "slash": "^3.0.0"
   },
   "devDependencies": {
     "@nestjs/swagger": "^7.1.2",
