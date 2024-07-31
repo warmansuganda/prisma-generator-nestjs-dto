@@ -37,6 +37,7 @@ export const generate = async (options: GeneratorOptions) => {
     entitySuffix = '',
     fileNamingStyle = 'camel',
     outputType = 'class',
+    generateFileTypes = 'all',
   } = options.generator.config;
 
   const exportRelationModifierClasses = stringToBoolean(
@@ -169,6 +170,7 @@ export const generate = async (options: GeneratorOptions) => {
     requiredResponseApiProperty,
     prismaClientImportPath,
     outputApiPropertyType,
+    generateFileTypes,
   });
 
   const indexCollections: Record<string, WriteableFileSpecs> = {};

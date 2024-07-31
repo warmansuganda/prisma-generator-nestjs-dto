@@ -34,6 +34,7 @@ interface RunParam {
   requiredResponseApiProperty: boolean;
   prismaClientImportPath: string;
   outputApiPropertyType: boolean;
+  generateFileTypes: string;
 }
 
 export const run = ({
@@ -53,6 +54,7 @@ export const run = ({
     requiredResponseApiProperty,
     prismaClientImportPath,
     outputApiPropertyType,
+    generateFileTypes,
     ...preAndSuffixes
   } = options;
 
@@ -92,6 +94,12 @@ export const run = ({
         entity: '',
       },
     }));
+
+  if (generateFileTypes === 'entity' && filteredTypes.length) {
+    throw new Error(
+      `Generating only Entity files while having complex types is not possible. Set 'generateFileTypes' to 'all' or 'dto'.`,
+    );
+  }
 
   const filteredModels: Model[] = allModels
     .filter((model) => !isAnnotatedWith(model, DTO_IGNORE_MODEL))
@@ -239,7 +247,16 @@ export const run = ({
       }),
     };
 
-    return [connectDto, createDto, updateDto, entity, plainDto];
+    switch (generateFileTypes) {
+      case 'all':
+        return [connectDto, createDto, updateDto, entity, plainDto];
+      case 'dto':
+        return [connectDto, createDto, updateDto, plainDto];
+      case 'entity':
+        return [entity];
+      default:
+        throw new Error(`Unknown 'generateFileTypes' value.`);
+    }
   });
 
   return [...typeFiles, ...modelFiles].flat();

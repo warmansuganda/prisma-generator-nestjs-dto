@@ -26,6 +26,7 @@ generator nestjsDto {
   definiteAssignmentAssertion     = "true"
   prettier                        = "true"
   outputApiPropertyType           = "true"
+  generateFileTypes               = "all"
 }
 
 model Product {

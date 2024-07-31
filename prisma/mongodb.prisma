@@ -19,7 +19,9 @@ generator nestjsDto {
   classValidation                 = "true"
   noDependencies                  = "false"
   outputType                      = "class"
+  prettier                        = "true"
   requiredResponseApiProperty     = "false"
+  generateFileTypes               = "dto"
 }
 
 model Product {

@@ -57,6 +57,7 @@ generator nestjsDto {
   requiredResponseApiProperty     = "true"
   prettier                        = "false"
   outputApiPropertyType           = "true"
+  generateFileTypes               = "all"
 }
 ```
 
@@ -83,7 +84,8 @@ All parameters are optional.
 | `definiteAssignmentAssertion = "false"`                          | Add a definite assignment assertion operator `!` to required fields, which is required if `strict` and/or `strictPropertyInitialization` is set `true` in your tsconfig.json's `compilerOptions`.                    |
 | `requiredResponseApiProperty = "true"`                           | If `false`, add `@ApiRequired({ required: false })` to response DTO properties. Otherwise, use `required` defaults always to `true` unless field is optional.                                                        |
 | `prettier = "false"`                                             | Stylize output files with prettier.                                                                                                                                                                                  |
-| `outputApiPropertyType = "true"`                                 | Disable the type property inside @ApiProperty() |
+| `outputApiPropertyType = "true"`                                 | Disable the type property inside @ApiProperty()                                                                                                                                                                      |
+| `generateFileTypes = "all"`                                      | `all`: generate both DTO and Entity files, `dto`: generate only DTO files, `entity`: generate only Entity files (not possible in combination with complex types)                                                     |
 
 ## Annotations
 
