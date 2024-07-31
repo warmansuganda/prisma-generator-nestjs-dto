@@ -44,6 +44,7 @@ generator nestjsDto {
   flatResourceStructure           = "false"
   exportRelationModifierClasses   = "true"
   reExport                        = "false"
+  generateFileTypes               = "all"
   createDtoPrefix                 = "Create"
   updateDtoPrefix                 = "Update"
   dtoSuffix                       = "Dto"
@@ -57,7 +58,6 @@ generator nestjsDto {
   requiredResponseApiProperty     = "true"
   prettier                        = "false"
   outputApiPropertyType           = "true"
-  generateFileTypes               = "all"
 }
 ```
 
@@ -72,6 +72,7 @@ All parameters are optional.
 | `flatResourceStructure = "false"`                                | If `outputToNestJsResourceStructure` is `true`, subfolders `dto`s and `entities` are created within the resource folder. Setting this to `true` will flatten the hierarchy.                                          |
 | `exportRelationModifierClasses = "true"`                         | Should extra classes generated for relationship field operations on DTOs be exported?                                                                                                                                |
 | `reExport = "false"`                                             | Should an index.ts be created for every folder?                                                                                                                                                                      |
+| `generateFileTypes = "all"`                                      | `all`: generate both DTO and Entity files, `dto`: generate only DTO files, `entity`: generate only Entity files (not possible in combination with complex types)                                                     |
 | `createDtoPrefix = "Create"`                                     | phrase to prefix every `CreateDTO` class with                                                                                                                                                                        |
 | `updateDtoPrefix = "Update"`                                     | phrase to prefix every `UpdateDTO` class with                                                                                                                                                                        |
 | `dtoSuffix = "Dto"`                                              | phrase to suffix every `CreateDTO` and `UpdateDTO` class with                                                                                                                                                        |
@@ -84,8 +85,7 @@ All parameters are optional.
 | `definiteAssignmentAssertion = "false"`                          | Add a definite assignment assertion operator `!` to required fields, which is required if `strict` and/or `strictPropertyInitialization` is set `true` in your tsconfig.json's `compilerOptions`.                    |
 | `requiredResponseApiProperty = "true"`                           | If `false`, add `@ApiRequired({ required: false })` to response DTO properties. Otherwise, use `required` defaults always to `true` unless field is optional.                                                        |
 | `prettier = "false"`                                             | Stylize output files with prettier.                                                                                                                                                                                  |
-| `outputApiPropertyType = "true"`                                 | Disable the type property inside @ApiProperty()                                                                                                                                                                      |
-| `generateFileTypes = "all"`                                      | `all`: generate both DTO and Entity files, `dto`: generate only DTO files, `entity`: generate only Entity files (not possible in combination with complex types)                                                     |
+| `outputApiPropertyType = "true"`                                 | If `false`, omit `type` property inside `@ApiProperty()` (see [#39](https://github.com/Brakebein/prisma-generator-nestjs-dto/issues/39#issuecomment-2168651849))                                                     |
 
 ## Annotations
 

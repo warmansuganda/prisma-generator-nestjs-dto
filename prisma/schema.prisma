@@ -14,6 +14,7 @@ generator nestjsDto {
   flatResourceStructure           = "true"
   exportRelationModifierClasses   = "true"
   reExport                        = "true"
+  generateFileTypes               = "all"
   createDtoPrefix                 = "Create"
   updateDtoPrefix                 = "Update"
   dtoSuffix                       = "Dto"
@@ -26,7 +27,6 @@ generator nestjsDto {
   definiteAssignmentAssertion     = "true"
   prettier                        = "true"
   outputApiPropertyType           = "true"
-  generateFileTypes               = "all"
 }
 
 model Product {
