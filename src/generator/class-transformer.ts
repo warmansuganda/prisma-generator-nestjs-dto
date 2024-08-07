@@ -10,7 +10,7 @@ export function decorateTransformer(field: ParsedField): string {
   if (type) decorator += `@Type(${type.value})\n`;
 
   if (isAnnotatedWith({ documentation: field.documentation }, EXCLUDE_ENTITY)) {
-    decorator += `@Exclude\n`;
+    decorator += `@Exclude()\n`;
   }
 
   return decorator;
