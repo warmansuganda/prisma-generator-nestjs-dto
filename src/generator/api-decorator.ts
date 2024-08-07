@@ -160,7 +160,7 @@ export function parseApiProperty(
  */
 export function decorateApiProperty(field: ParsedField): string {
   if (field.apiHideProperty) {
-    return '@ApiHideProperty()\n';
+    return '@ApiHideProperty()\n@Exclude()\n';
   }
 
   if (
@@ -202,7 +202,10 @@ export function makeImportsFromNestjsSwagger(
     if (hasApiHideProperty) destruct.push('ApiHideProperty');
     if (hasApiProperty) destruct.push('ApiProperty');
 
-    return [{ from: '@nestjs/swagger', destruct }];
+    const imp = [{ from: '@nestjs/swagger', destruct }];
+    if (hasApiHideProperty)
+      imp.push({ from: 'class-transformer', destruct: ['Exclude'] });
+    return imp;
   }
 
   return [];
