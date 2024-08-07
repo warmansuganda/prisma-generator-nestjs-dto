@@ -4,6 +4,7 @@ import { decorateApiProperty } from './api-decorator';
 import { decorateClassValidators } from './class-validator';
 import { isAnnotatedWith, isScalar, isType } from './field-classifiers';
 import { DTO_CAST_TYPE, DTO_TYPE_FULL_UPDATE } from './annotations';
+import { decorateTransformer } from './class-transformer';
 
 const PrismaScalarToTypeScript: Record<string, string> = {
   String: 'string',
@@ -239,7 +240,7 @@ export const makeHelpers = ({
     )}`;
 
   const fieldToEntityProp = (field: ParsedField) =>
-    `${decorateApiProperty(field)}${field.name}${unless(
+    `${decorateApiProperty(field)}${decorateTransformer(field)}${field.name}${unless(
       field.isRequired,
       '?',
       when(definiteAssignmentAssertion, '!'),

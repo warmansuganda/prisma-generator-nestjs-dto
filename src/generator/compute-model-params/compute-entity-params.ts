@@ -32,6 +32,7 @@ import {
   makeImportsFromNestjsSwagger,
   parseApiProperty,
 } from '../api-decorator';
+import { makeImportsFromClassTransformer } from '../class-transformer';
 
 interface ComputeEntityParamsParam {
   model: Model;
@@ -207,6 +208,8 @@ export const computeEntityParams = ({
     templateHelpers.config.prismaClientImportPath,
   );
 
+  const importClassTransformer = makeImportsFromClassTransformer(fields);
+
   const importNestjsSwagger = makeImportsFromNestjsSwagger(
     fields,
     apiExtraModels,
@@ -217,6 +220,7 @@ export const computeEntityParams = ({
     fields,
     imports: zipImportStatementParams([
       ...importPrismaClient,
+      ...importClassTransformer,
       ...importNestjsSwagger,
       ...imports,
     ]),
