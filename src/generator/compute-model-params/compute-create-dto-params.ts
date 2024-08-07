@@ -138,9 +138,7 @@ export const computeCreateDtoParams = ({
     if (isDtoOptional) {
       overrides.isRequired = false;
     }
-    if (!field.isRequired) {
-      overrides.isNullable = true;
-    }
+    overrides.isNullable = !field.isRequired;
 
     if (isType(field)) {
       // don't try to import the class we're preparing params for
@@ -207,9 +205,15 @@ export const computeCreateDtoParams = ({
         const includeType = templateHelpers.config.outputApiPropertyType
           ? !overrides.type
           : false;
-        decorators.apiProperties = parseApiProperty(field, {
-          type: includeType,
-        });
+        decorators.apiProperties = parseApiProperty(
+          {
+            ...field,
+            ...overrides,
+          },
+          {
+            type: includeType,
+          },
+        );
         if (overrides.type && templateHelpers.config.outputApiPropertyType)
           decorators.apiProperties.push({
             name: 'type',
