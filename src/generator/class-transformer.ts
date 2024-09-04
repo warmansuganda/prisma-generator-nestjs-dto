@@ -20,7 +20,7 @@ export function decorateTransformer(field: ParsedField): string {
       TRANSFORM_FILE_URL_ENTITY,
     )
   ) {
-    decorator += `@TransformFileUrl()\n`;
+    decorator += `${field.documentation}\n`;
   }
 
   return decorator;
@@ -57,7 +57,7 @@ export function makeImportsFromClassTransformer(
   const classDecorator = destructDecorator.length
     ? [
         {
-          from: '@inofix/prisma-generator-nestjs-dto/decorators',
+          from: '../helpers',
           destruct: destructDecorator,
         },
       ]
