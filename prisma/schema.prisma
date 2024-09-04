@@ -123,8 +123,11 @@ model Company {
 model Photo {
   id      String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
 
-  /// @TransformFileUrl(process.env.AHAY)
+  /// @TransformerFileUrl(process.env.AHAY)
   url String?
+
+  /// @TransformerAhay(process.env.AHAY)
+  ahay String?
 
   product Product[]
 }

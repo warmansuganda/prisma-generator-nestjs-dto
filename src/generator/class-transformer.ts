@@ -2,7 +2,7 @@ import { isAnnotatedWith } from './field-classifiers';
 import { ImportStatementParams, ParsedField } from './types';
 
 export const EXCLUDE_ENTITY = /@Exclude/;
-export const TRANSFORM_FILE_URL_ENTITY = /@TransformFileUrl/;
+export const TRANSFORM_FILE_URL_ENTITY = /@Transformer/;
 
 export function decorateTransformer(field: ParsedField): string {
   let decorator = '';
@@ -36,7 +36,7 @@ export function makeImportsFromClassTransformer(
     isAnnotatedWith({ documentation: field.documentation }, EXCLUDE_ENTITY),
   );
 
-  const hasTransformFileUrl = fields.some((field) =>
+  const hasTransformFileUrl = fields.filter((field) =>
     isAnnotatedWith(
       { documentation: field.documentation },
       TRANSFORM_FILE_URL_ENTITY,
@@ -51,17 +51,32 @@ export function makeImportsFromClassTransformer(
     ? [{ from: 'class-transformer', destruct }]
     : [];
 
-  const destructDecorator: string[] = [];
-  if (hasTransformFileUrl) destructDecorator.push('TransformFileUrl');
+  // Regular expression to match function names between @ and (
+  const regex = /@([^\s(]+)\(/g;
 
-  const classDecorator = destructDecorator.length
-    ? [
-        {
-          from: '../helpers',
-          destruct: destructDecorator,
-        },
-      ]
+  // Create a Set to store unique function names
+  const uniqueFunctions = new Set();
+
+  hasTransformFileUrl.forEach((input) => {
+    let match;
+
+    if (input.documentation) {
+      // Find all matches in the current string
+      while ((match = regex.exec(input.documentation)) !== null) {
+        uniqueFunctions.add(match[1]); // Add to Set (automatically handles duplicates)
+      }
+    }
+  });
+
+  // Convert the Set to an array
+  const customDestruct = Array.from(uniqueFunctions) as string[];
+
+  const customTransformer = customDestruct.length
+    ? customDestruct.map((item) => ({
+        from: `../transformers/${item}`,
+        default: item.toString(),
+      }))
     : [];
 
-  return [...classTransformer, ...classDecorator];
+  return [...classTransformer, ...customTransformer];
 }
