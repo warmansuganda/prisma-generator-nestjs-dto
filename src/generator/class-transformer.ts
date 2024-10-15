@@ -53,7 +53,6 @@ export function makeImportsFromClassTransformer(
           /@TransformerDateTime/,
         )
       ) {
-        console.log('decorator', decorator);
         decorator += `\n@TransformerDateTime()`;
       }
       return {
