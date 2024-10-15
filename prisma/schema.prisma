@@ -106,6 +106,8 @@ model Product {
 model Category {
   id        String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   name      String
+  createdAt DateTime
+  /// @TransformerDateTime()
   updatedAt DateTime  @updatedAt
   /// @DtoRelationCanCreateOnCreate
   /// @DtoRelationCanConnectOnUpdate

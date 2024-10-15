@@ -2,7 +2,7 @@ import { isAnnotatedWith } from './field-classifiers';
 import { ImportStatementParams, ParsedField } from './types';
 
 export const EXCLUDE_ENTITY = /@Exclude/;
-export const TRANSFORM_FILE_URL_ENTITY = /@Transformer/;
+export const CUSTOM_TRANSFORMER = /@Transformer/;
 
 export function decorateTransformer(field: ParsedField): string {
   let decorator = '';
@@ -15,12 +15,19 @@ export function decorateTransformer(field: ParsedField): string {
   }
 
   if (
-    isAnnotatedWith(
-      { documentation: field.documentation },
-      TRANSFORM_FILE_URL_ENTITY,
-    )
+    isAnnotatedWith({ documentation: field.documentation }, CUSTOM_TRANSFORMER)
   ) {
     decorator += `${field.documentation}\n`;
+  }
+
+  if (
+    field.type === 'DateTime' &&
+    !isAnnotatedWith(
+      { documentation: field.documentation },
+      /@TransformerDateTime/,
+    )
+  ) {
+    decorator += `@TransformerDateTime()\n`;
   }
 
   return decorator;
@@ -36,12 +43,30 @@ export function makeImportsFromClassTransformer(
     isAnnotatedWith({ documentation: field.documentation }, EXCLUDE_ENTITY),
   );
 
-  const hasTransformFileUrl = fields.filter((field) =>
-    isAnnotatedWith(
-      { documentation: field.documentation },
-      TRANSFORM_FILE_URL_ENTITY,
-    ),
-  );
+  const hasCustomTransformer = fields
+    .map((field) => {
+      let decorator = field.documentation;
+      if (
+        field.type === 'DateTime' &&
+        !isAnnotatedWith(
+          { documentation: field.documentation },
+          /@TransformerDateTime/,
+        )
+      ) {
+        console.log('decorator', decorator);
+        decorator += `\n@TransformerDateTime()`;
+      }
+      return {
+        ...field,
+        documentation: decorator,
+      };
+    })
+    .filter((field) =>
+      isAnnotatedWith(
+        { documentation: field.documentation },
+        CUSTOM_TRANSFORMER,
+      ),
+    );
 
   const destruct: string[] = [];
   if (hasType) destruct.push('Type');
@@ -57,7 +82,7 @@ export function makeImportsFromClassTransformer(
   // Create a Set to store unique function names
   const uniqueFunctions = new Set();
 
-  hasTransformFileUrl.forEach((input) => {
+  hasCustomTransformer.forEach((input) => {
     let match;
 
     if (input.documentation) {
