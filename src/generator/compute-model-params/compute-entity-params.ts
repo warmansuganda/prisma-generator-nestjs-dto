@@ -18,8 +18,8 @@ import {
   mapDMMFToParsedField,
   zipImportStatementParams,
 } from '../helpers';
+import type { FieldOverrides } from '../helpers';
 
-import type { DMMF } from '@prisma/generator-helper';
 import type {
   Model,
   EntityParams,
@@ -52,7 +52,7 @@ export const computeEntityParams = ({
 
   const fields = model.fields.reduce((result, field) => {
     const { name } = field;
-    const overrides: Partial<DMMF.Field> = {
+    const overrides: FieldOverrides = {
       isRequired: true,
       isNullable: !field.isRequired,
     };
@@ -196,8 +196,12 @@ export const computeEntityParams = ({
     }
 
     if (templateHelpers.config.noDependencies) {
-      if (field.type === 'Json') field.type = 'Object';
-      else if (field.type === 'Decimal') field.type = 'Float';
+      overrides.type =
+        field.type === 'Json'
+          ? 'Object'
+          : field.type === 'Decimal'
+            ? 'Float'
+            : field.type;
     }
 
     return [...result, mapDMMFToParsedField(field, overrides, decorators)];

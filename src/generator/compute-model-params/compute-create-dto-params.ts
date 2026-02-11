@@ -31,8 +31,8 @@ import {
   mapDMMFToParsedField,
   zipImportStatementParams,
 } from '../helpers';
+import type { FieldOverrides } from '../helpers';
 
-import type { DMMF } from '@prisma/generator-helper';
 import type { TemplateHelpers } from '../template-helpers';
 import type {
   Model,
@@ -68,14 +68,14 @@ export const computeCreateDtoParams = ({
 
   const fields = model.fields.reduce((result, field) => {
     const { name } = field;
-    const overrides: Partial<DMMF.Field> = {};
+    const overrides: FieldOverrides = {};
     const decorators: IDecorators = {};
 
     if (
       isAnnotatedWith(field, DTO_RELATION_INCLUDE_ID) &&
       relationScalarFieldNames.includes(name)
     )
-      field.isReadOnly = false;
+      overrides.isReadOnly = false;
 
     if (isReadOnly(field)) return result;
     if (isAnnotatedWith(field, DTO_CREATE_HIDDEN)) return result;
@@ -180,15 +180,19 @@ export const computeCreateDtoParams = ({
     if (templateHelpers.config.classValidation) {
       if (isAnnotatedWith(field, DTO_CREATE_VALIDATE_IF)) {
         overrides.documentation = (
-          overrides.documentation ?? field.documentation
-        )?.replace(DTO_CREATE_VALIDATE_IF, '@ValidateIf');
+          (overrides.documentation as string) ??
+          field.documentation ??
+          ''
+        ).replace(DTO_CREATE_VALIDATE_IF, '@ValidateIf');
       }
       decorators.classValidators = parseClassValidators(
         {
           ...field,
           ...overrides,
         },
-        overrides.type || templateHelpers.createDtoName,
+        typeof overrides.type === 'string'
+          ? overrides.type
+          : templateHelpers.createDtoName,
       );
       concatUniqueIntoArray(
         decorators.classValidators,
@@ -214,7 +218,10 @@ export const computeCreateDtoParams = ({
             type: includeType,
           },
         );
-        if (overrides.type && templateHelpers.config.outputApiPropertyType)
+        if (
+          typeof overrides.type === 'string' &&
+          templateHelpers.config.outputApiPropertyType
+        )
           decorators.apiProperties.push({
             name: 'type',
             value: overrides.type,
@@ -233,8 +240,12 @@ export const computeCreateDtoParams = ({
     }
 
     if (templateHelpers.config.noDependencies) {
-      if (field.type === 'Json') field.type = 'Object';
-      else if (field.type === 'Decimal') field.type = 'Float';
+      overrides.type =
+        field.type === 'Json'
+          ? 'Object'
+          : field.type === 'Decimal'
+            ? 'Float'
+            : field.type;
     }
 
     return [...result, mapDMMFToParsedField(field, overrides, decorators)];

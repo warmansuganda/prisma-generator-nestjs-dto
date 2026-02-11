@@ -9,6 +9,7 @@ import {
   uniq,
   zipImportStatementParams,
 } from '../helpers';
+import type { ParsedField } from '../types';
 import type {
   ConnectDtoParams,
   IClassValidator,
@@ -47,8 +48,15 @@ export const computeConnectDtoParams = ({
   const uniqueCompoundFields: {
     name: string | null;
     fields: string[];
-  }[] = model.uniqueIndexes;
-  if (model.primaryKey) uniqueCompoundFields.unshift(model.primaryKey);
+  }[] = model.uniqueIndexes.map((idx) => ({
+    name: idx.name,
+    fields: [...idx.fields],
+  }));
+  if (model.primaryKey)
+    uniqueCompoundFields.unshift({
+      name: model.primaryKey.name,
+      fields: [...model.primaryKey.fields],
+    });
   const uniqueCompounds: { name: string; fields: DMMF.Field[] }[] = [];
 
   uniqueCompoundFields.forEach((uniqueIndex) => {
@@ -73,7 +81,10 @@ export const computeConnectDtoParams = ({
    * connect?: (A | B)[];
    */
   // TODO consider adding documentation block to model that one of the properties must be provided
-  const uniqueFields = uniq([...idFields, ...isUniqueFields]);
+  const uniqueFields: ParsedField[] = uniq([
+    ...idFields,
+    ...isUniqueFields,
+  ]).map((f) => mapDMMFToParsedField(f, {}, {}));
   const overrides =
     uniqueFields.length + uniqueCompounds.length > 1
       ? { isRequired: false }
@@ -96,18 +107,23 @@ export const computeConnectDtoParams = ({
       'name',
     );
 
-    uniqueFields.push({
-      name: compound.name,
-      type: compoundInput.type,
-      kind: 'object',
-      isList: false,
-      isRequired: true,
-      isId: false,
-      isUnique: false,
-      isReadOnly: true,
-      hasDefaultValue: false,
-      pureType: true,
-    });
+    uniqueFields.push(
+      mapDMMFToParsedField(
+        {
+          name: compound.name,
+          type: compoundInput.type,
+          kind: 'object',
+          isList: false,
+          isRequired: true,
+          isId: false,
+          isUnique: false,
+          isReadOnly: true,
+          hasDefaultValue: false,
+        } as DMMF.Field,
+        { pureType: true },
+        {},
+      ),
+    );
   });
 
   const fields = uniqueFields.map((field) => {
@@ -143,12 +159,17 @@ export const computeConnectDtoParams = ({
         typeProperty.value = '() => Object';
     }
 
+    const fieldOverrides = { ...overrides } as Record<string, unknown>;
     if (templateHelpers.config.noDependencies) {
-      if (field.type === 'Json') field.type = 'Object';
-      else if (field.type === 'Decimal') field.type = 'Float';
+      fieldOverrides.type =
+        field.type === 'Json'
+          ? 'Object'
+          : field.type === 'Decimal'
+            ? 'Float'
+            : field.type;
     }
 
-    return mapDMMFToParsedField(field, overrides, decorators);
+    return mapDMMFToParsedField(field, fieldOverrides, decorators);
   });
 
   if (classValidators.length) {

@@ -81,7 +81,7 @@ function encapsulateString(value: string): string {
  * @param include All default to `true`. Set to `false` if you want to exclude a type of annotation.
  */
 export function parseApiProperty(
-  field: DMMF.Field,
+  field: (DMMF.Field | ParsedField) & { isNullable?: boolean },
   include: {
     default?: boolean;
     doc?: boolean;
@@ -141,9 +141,11 @@ export function parseApiProperty(
   if (!field.isRequired) {
     properties.push({ name: 'required', value: 'false' });
   }
-  if (
-    typeof field.isNullable === 'boolean' ? field.isNullable : !field.isRequired
-  ) {
+  const isNullable =
+    'isNullable' in field && typeof field.isNullable === 'boolean'
+      ? field.isNullable
+      : !field.isRequired;
+  if (isNullable) {
     properties.push({ name: 'nullable', value: 'true' });
   }
 

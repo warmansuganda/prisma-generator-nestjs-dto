@@ -26,10 +26,11 @@ describe('map DMMF.Field to ParsedField', () => {
 
   test('preserves all other properties from "field"', () => {
     const parsedField = mapDMMFToParsedField(field, overrides);
+    const fieldObj = field as Record<string, unknown>;
     Object.keys(field)
       .filter((key) => key !== 'name')
       .forEach((key) => {
-        expect(parsedField[key as keyof ParsedField]).toBe(field[key]);
+        expect(parsedField[key as keyof ParsedField]).toBe(fieldObj[key]);
       });
   });
 });

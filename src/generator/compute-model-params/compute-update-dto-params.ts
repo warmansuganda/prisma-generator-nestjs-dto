@@ -33,8 +33,8 @@ import {
   mapDMMFToParsedField,
   zipImportStatementParams,
 } from '../helpers';
+import type { FieldOverrides } from '../helpers';
 
-import type { DMMF } from '@prisma/generator-helper';
 import {
   makeImportsFromNestjsSwagger,
   parseApiProperty,
@@ -70,7 +70,7 @@ export const computeUpdateDtoParams = ({
 
   const fields = model.fields.reduce((result, field) => {
     const { name } = field;
-    const overrides: Partial<DMMF.Field> = {
+    const overrides: FieldOverrides = {
       isRequired: false,
       isNullable: !field.isRequired,
     };
@@ -80,7 +80,7 @@ export const computeUpdateDtoParams = ({
       isAnnotatedWith(field, DTO_RELATION_INCLUDE_ID) &&
       relationScalarFieldNames.includes(name)
     )
-      field.isReadOnly = false;
+      overrides.isReadOnly = false;
 
     if (isReadOnly(field)) return result;
     if (isAnnotatedWith(field, DTO_UPDATE_HIDDEN)) return result;
@@ -182,18 +182,21 @@ export const computeUpdateDtoParams = ({
     if (templateHelpers.config.classValidation) {
       if (isAnnotatedWith(field, DTO_UPDATE_VALIDATE_IF)) {
         overrides.documentation = (
-          overrides.documentation ?? field.documentation
-        )?.replace(DTO_UPDATE_VALIDATE_IF, '@ValidateIf');
+          (overrides.documentation as string) ??
+          field.documentation ??
+          ''
+        ).replace(DTO_UPDATE_VALIDATE_IF, '@ValidateIf');
       }
       decorators.classValidators = parseClassValidators(
         {
           ...field,
           ...overrides,
         },
-        overrides.type ||
-          (isType(field) && doFullUpdate
+        typeof overrides.type === 'string'
+          ? overrides.type
+          : isType(field) && doFullUpdate
             ? templateHelpers.createDtoName
-            : templateHelpers.updateDtoName),
+            : templateHelpers.updateDtoName,
       );
       concatUniqueIntoArray(
         decorators.classValidators,
@@ -220,7 +223,10 @@ export const computeUpdateDtoParams = ({
             type: includeType,
           },
         );
-        if (overrides.type && templateHelpers.config.outputApiPropertyType)
+        if (
+          typeof overrides.type === 'string' &&
+          templateHelpers.config.outputApiPropertyType
+        )
           decorators.apiProperties.push({
             name: 'type',
             value: overrides.type,
@@ -241,8 +247,12 @@ export const computeUpdateDtoParams = ({
     }
 
     if (templateHelpers.config.noDependencies) {
-      if (field.type === 'Json') field.type = 'Object';
-      else if (field.type === 'Decimal') field.type = 'Float';
+      overrides.type =
+        field.type === 'Json'
+          ? 'Object'
+          : field.type === 'Decimal'
+            ? 'Float'
+            : field.type;
     }
 
     return [...result, mapDMMFToParsedField(field, overrides, decorators)];

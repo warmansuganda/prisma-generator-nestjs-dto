@@ -85,13 +85,15 @@ export const isUnique = (field: DMMF.Field): boolean => {
   return field.isUnique;
 };
 
-export const isRelation = (field: DMMF.Field): boolean => {
+type FieldLike = { kind: string; relationName?: string };
+
+export const isRelation = (field: DMMF.Field | FieldLike): boolean => {
   const { kind, relationName } = field;
   // indicates a `relation` field
   return kind === 'object' && !!relationName;
 };
 
-export const isType = (field: DMMF.Field): boolean => {
+export const isType = (field: DMMF.Field | FieldLike): boolean => {
   return field.kind === 'object' && !field.relationName;
 };
 

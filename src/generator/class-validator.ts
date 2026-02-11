@@ -135,7 +135,7 @@ function scalarToValidator(scalar: string): IClassValidator | undefined {
 }
 
 function extractValidator(
-  field: DMMF.Field,
+  field: { documentation?: string },
   prop: string,
 ): IClassValidator | null {
   const regexp = new RegExp(`@${prop}(?:\\(([^)]*)\\))?\s*$`, 'm');
@@ -189,7 +189,7 @@ function optEach(validator: IClassValidator, isList: boolean): void {
  * Parse all types of class validators.
  */
 export function parseClassValidators(
-  field: DMMF.Field,
+  field: DMMF.Field | ParsedField,
   dtoName?: string | ((name: string) => string),
 ): IClassValidator[] {
   const validators: IClassValidator[] = [];

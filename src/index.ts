@@ -10,16 +10,23 @@ import { run } from './generator';
 import type { GeneratorOptions } from '@prisma/generator-helper';
 import type { WriteableFileSpecs, NamingStyle } from './generator/types';
 
-const stringToBoolean = (input: string, defaultValue = false) => {
-  if (input === 'true') {
+const stringToBoolean = (
+  input: string | string[] | undefined,
+  defaultValue = false,
+) => {
+  const val = Array.isArray(input) ? input[0] : (input ?? '');
+  if (val === 'true') {
     return true;
   }
-  if (input === 'false') {
+  if (val === 'false') {
     return false;
   }
 
   return defaultValue;
 };
+
+const toStr = (v: string | string[] | undefined, def: string): string =>
+  (Array.isArray(v) ? v[0] : v) ?? def;
 
 export const generate = async (options: GeneratorOptions) => {
   // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -28,37 +35,36 @@ export const generate = async (options: GeneratorOptions) => {
     throw new Error('Failed to parse output path');
   }
 
-  const {
-    connectDtoPrefix = 'Connect',
-    createDtoPrefix = 'Create',
-    updateDtoPrefix = 'Update',
-    dtoSuffix = 'Dto',
-    entityPrefix = '',
-    entitySuffix = '',
-    fileNamingStyle = 'camel',
-    outputType = 'class',
-    generateFileTypes = 'all',
-  } = options.generator.config;
+  const config = options.generator.config;
+  const connectDtoPrefix = toStr(config.connectDtoPrefix, 'Connect');
+  const createDtoPrefix = toStr(config.createDtoPrefix, 'Create');
+  const updateDtoPrefix = toStr(config.updateDtoPrefix, 'Update');
+  const dtoSuffix = toStr(config.dtoSuffix, 'Dto');
+  const entityPrefix = toStr(config.entityPrefix, '');
+  const entitySuffix = toStr(config.entitySuffix, '');
+  const fileNamingStyle = toStr(config.fileNamingStyle, 'camel');
+  const outputType = toStr(config.outputType, 'class');
+  const generateFileTypes = toStr(config.generateFileTypes, 'all');
 
   const exportRelationModifierClasses = stringToBoolean(
-    options.generator.config.exportRelationModifierClasses,
+    config.exportRelationModifierClasses,
     true,
   );
 
   const outputToNestJsResourceStructure = stringToBoolean(
-    options.generator.config.outputToNestJsResourceStructure,
+    config.outputToNestJsResourceStructure,
     // using `true` as default value would be a breaking change
     false,
   );
 
   const flatResourceStructure = stringToBoolean(
-    options.generator.config.flatResourceStructure,
+    config.flatResourceStructure,
     // using `true` as default value would be a breaking change
     false,
   );
 
   const reExport = stringToBoolean(
-    options.generator.config.reExport,
+    config.reExport,
     // using `true` as default value would be a breaking change
     false,
   );
@@ -76,7 +82,7 @@ export const generate = async (options: GeneratorOptions) => {
   }
 
   const classValidation = stringToBoolean(
-    options.generator.config.classValidation,
+    config.classValidation,
     // using `true` as default value would be a breaking change
     false,
   );
@@ -89,7 +95,7 @@ export const generate = async (options: GeneratorOptions) => {
   }
 
   const noDependencies = stringToBoolean(
-    options.generator.config.noDependencies,
+    config.noDependencies,
     // using `true` as default value would be a breaking change
     false,
   );
@@ -107,7 +113,7 @@ export const generate = async (options: GeneratorOptions) => {
   }
 
   const definiteAssignmentAssertion = stringToBoolean(
-    options.generator.config.definiteAssignmentAssertion,
+    config.definiteAssignmentAssertion,
     false,
   );
   if (definiteAssignmentAssertion && outputType !== 'class') {
@@ -117,7 +123,7 @@ export const generate = async (options: GeneratorOptions) => {
   }
 
   const requiredResponseApiProperty = stringToBoolean(
-    options.generator.config.requiredResponseApiProperty,
+    config.requiredResponseApiProperty,
     true,
   );
 
@@ -146,7 +152,7 @@ export const generate = async (options: GeneratorOptions) => {
   }
 
   const outputApiPropertyType = stringToBoolean(
-    options.generator.config.outputApiPropertyType,
+    config.outputApiPropertyType,
     true,
   );
 
@@ -209,10 +215,7 @@ export const generate = async (options: GeneratorOptions) => {
     }
   }
 
-  const applyPrettier = stringToBoolean(
-    options.generator.config.prettier,
-    false,
-  );
+  const applyPrettier = stringToBoolean(config.prettier, false);
 
   let prettierConfig: prettier.Options = {};
   if (applyPrettier) {

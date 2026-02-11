@@ -116,18 +116,29 @@ export const makeImportsFromPrismaClient = (
   return [...prismaImport, ...customImports];
 };
 
+export type FieldOverrides = Record<string, unknown>;
+
 export const mapDMMFToParsedField = (
-  field: DMMF.Field,
-  overrides: Partial<DMMF.Field> = {},
+  field: DMMF.Field | ParsedField,
+  overrides: FieldOverrides = {},
   decorators: IDecorators = {},
 ): ParsedField => ({
   ...field,
+  isUnique: field.isUnique ?? false,
+  isId: field.isId ?? false,
+  isReadOnly: field.isReadOnly ?? false,
+  relationFromFields: field.relationFromFields
+    ? [...field.relationFromFields]
+    : undefined,
+  relationToFields: field.relationToFields
+    ? [...field.relationToFields]
+    : undefined,
   ...overrides,
   ...decorators,
 });
 
 export const getRelationScalars = (
-  fields: DMMF.Field[],
+  fields: readonly DMMF.Field[],
 ): Record<string, string[]> => {
   const scalars = fields.flatMap(
     ({ relationFromFields = [] }) => relationFromFields,
@@ -534,7 +545,7 @@ export const generateUniqueInput = ({
   const classValidators: IClassValidator[] = [];
 
   const parsedFields = fields.map((field) => {
-    const overrides: Partial<DMMF.Field> = { isRequired: true };
+    const overrides: FieldOverrides = { isRequired: true };
     const decorators: {
       apiProperties?: IApiProperty[];
       classValidators?: IClassValidator[];
@@ -570,8 +581,12 @@ export const generateUniqueInput = ({
     }
 
     if (t.config.noDependencies) {
-      if (field.type === 'Json') field.type = 'Object';
-      else if (field.type === 'Decimal') field.type = 'Float';
+      overrides.type =
+        field.type === 'Json'
+          ? 'Object'
+          : field.type === 'Decimal'
+            ? 'Float'
+            : field.type;
     }
 
     return mapDMMFToParsedField(field, overrides, decorators);
