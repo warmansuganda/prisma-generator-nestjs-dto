@@ -1,15 +1,17 @@
 datasource db {
   provider = "postgresql"
-  url      = "postgresql://johndoe:mypassword@localhost:5432/mydb?schema=public"
 }
 
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../src/@generated/prisma"
 }
 
 generator nestjsDto {
   provider                        = "node -r ts-node/register/transpile-only src/cli.ts"
   output                          = "../src/@generated/prisma-generator-nestjs-dto"
+  prismaClientImportPath          = "prisma-path-client-custom"
+  transformersPath                = "transformer-path-client-custom"
   outputToNestJsResourceStructure = "true"
   flatResourceStructure           = "true"
   exportRelationModifierClasses   = "true"

@@ -35,6 +35,7 @@ export function decorateTransformer(field: ParsedField): string {
 
 export function makeImportsFromClassTransformer(
   fields: ParsedField[],
+  transformersPath = '',
 ): ImportStatementParams[] {
   const hasType = fields.some((field) =>
     field.apiProperties?.some((i) => i.noEncapsulation),
@@ -95,9 +96,12 @@ export function makeImportsFromClassTransformer(
   // Convert the Set to an array
   const customDestruct = Array.from(uniqueFunctions) as string[];
 
+  const transformerBase = transformersPath
+    ? transformersPath.replace(/\/$/, '') + '/'
+    : '../transformers/';
   const customTransformer = customDestruct.length
     ? customDestruct.map((item) => ({
-        from: `../transformers/${item}`,
+        from: `${transformerBase}${item}`,
         default: item.toString(),
       }))
     : [];

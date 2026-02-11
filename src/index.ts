@@ -127,29 +127,37 @@ export const generate = async (options: GeneratorOptions) => {
     true,
   );
 
-  const prismaClientGenerator = options.otherGenerators.find(
-    (config) => config.name === 'client',
-  );
-  const prismaClientOutputPath = prismaClientGenerator?.output?.value;
-  let prismaClientImportPath = '@prisma/client';
-  if (
-    prismaClientOutputPath &&
-    !prismaClientOutputPath.endsWith(
-      ['node_modules', '@prisma', 'client'].join(path.sep),
-    )
-  ) {
-    const withStructure = outputToNestJsResourceStructure
-      ? flatResourceStructure
-        ? '../'
-        : '../../'
-      : '';
-    prismaClientImportPath = slash(
-      withStructure + path.relative(output, prismaClientOutputPath),
+  const configPrismaClientImportPath = toStr(config.prismaClientImportPath, '');
+  let prismaClientImportPath: string;
+  if (configPrismaClientImportPath) {
+    prismaClientImportPath = configPrismaClientImportPath;
+  } else {
+    const prismaClientGenerator = options.otherGenerators.find(
+      (c) => c.name === 'client',
     );
-    if (!prismaClientImportPath.startsWith('.')) {
-      prismaClientImportPath = './' + prismaClientImportPath;
+    const prismaClientOutputPath = prismaClientGenerator?.output?.value;
+    prismaClientImportPath = '@prisma/client';
+    if (
+      prismaClientOutputPath &&
+      !prismaClientOutputPath.endsWith(
+        ['node_modules', '@prisma', 'client'].join(path.sep),
+      )
+    ) {
+      const withStructure = outputToNestJsResourceStructure
+        ? flatResourceStructure
+          ? '../'
+          : '../../'
+        : '';
+      prismaClientImportPath = slash(
+        withStructure + path.relative(output, prismaClientOutputPath),
+      );
+      if (!prismaClientImportPath.startsWith('.')) {
+        prismaClientImportPath = './' + prismaClientImportPath;
+      }
     }
   }
+
+  const transformersPath = toStr(config.transformersPath, '');
 
   const outputApiPropertyType = stringToBoolean(
     config.outputApiPropertyType,
@@ -177,6 +185,7 @@ export const generate = async (options: GeneratorOptions) => {
     prismaClientImportPath,
     outputApiPropertyType,
     generateFileTypes,
+    transformersPath,
   });
 
   const indexCollections: Record<string, WriteableFileSpecs> = {};

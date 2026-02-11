@@ -105,6 +105,7 @@ interface MakeHelpersParam {
   requiredResponseApiProperty: boolean;
   prismaClientImportPath: string;
   outputApiPropertyType: boolean;
+  transformersPath: string;
 }
 export const makeHelpers = ({
   connectDtoPrefix,
@@ -122,6 +123,7 @@ export const makeHelpers = ({
   requiredResponseApiProperty,
   prismaClientImportPath,
   outputApiPropertyType,
+  transformersPath = '',
 }: MakeHelpersParam) => {
   const className = (name: string, prefix = '', suffix = '') =>
     `${prefix}${transformClassNameCase(name)}${suffix}`;
@@ -267,6 +269,7 @@ export const makeHelpers = ({
       requiredResponseApiProperty,
       prismaClientImportPath,
       outputApiPropertyType,
+      transformersPath,
     },
     apiExtraModels,
     entityName,

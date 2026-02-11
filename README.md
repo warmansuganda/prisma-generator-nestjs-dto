@@ -8,6 +8,7 @@
 1. [Annotations](#annotations)
 1. [Example](#example)
 1. [Principles](#principles)
+1. [Deployment](#deployment)
 1. [License](#license)
 
 ## What is it?
@@ -68,6 +69,8 @@ All parameters are optional.
 | Parameter = default                                              | Description                                                                                                                                                                                                          |
 |------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `output = "../src/generated/nestjs-dto"`                         | output path relative to your `schema.prisma` file                                                                                                                                                                    |
+| `prismaClientImportPath = ""`                                    | Override Prisma client import path. If empty, computed from client generator output. If set, used as-is (e.g. `"@prisma/client"` or `"../prisma"`).                                                                   |
+| `transformersPath = ""`                                          | Override custom transformer import path. If empty, uses `../transformers/`. If set, used as base path for `@Transformer` imports (e.g. `"@app/transformers"`).                                                         |
 | <code>outputToNestJsResourceStructure&nbsp;=&nbsp;"false"</code> | writes `dto`s and `entities` to subfolders aligned with [NestJS CRUD generator](https://docs.nestjs.com/recipes/crud-generator). Resource module name is derived from lower-cased model name in `schema.prisma`      |
 | `flatResourceStructure = "false"`                                | If `outputToNestJsResourceStructure` is `true`, subfolders `dto`s and `entities` are created within the resource folder. Setting this to `true` will flatten the hierarchy.                                          |
 | `exportRelationModifierClasses = "true"`                         | Should extra classes generated for relationship field operations on DTOs be exported?                                                                                                                                |
@@ -434,6 +437,10 @@ Relation and [relation scalar](https://www.prisma.io/docs/concepts/components/pr
 
 The plain `DTO` class is almost the same as `Entity` with the difference that all relation fields are omitted.
 This is useful if your response is the plain entity without any (optional) relations.
+
+## Deployment
+
+See [DEPLOYMENT.md](DEPLOYMENT.md) for building, testing, and publishing the package to npm.
 
 ## License
 

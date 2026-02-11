@@ -145,7 +145,10 @@ export const computePlainDtoParams = ({
     templateHelpers.config.prismaClientImportPath,
   );
 
-  const importClassTransformer = makeImportsFromClassTransformer(fields);
+  const importClassTransformer = makeImportsFromClassTransformer(
+    fields,
+    templateHelpers.config.transformersPath,
+  );
 
   const importNestjsSwagger = makeImportsFromNestjsSwagger(
     fields,
