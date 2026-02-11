@@ -17,7 +17,12 @@ export function decorateTransformer(field: ParsedField): string {
   if (
     isAnnotatedWith({ documentation: field.documentation }, CUSTOM_TRANSFORMER)
   ) {
-    decorator += `${field.documentation}\n`;
+    // Strip @Dto*Custom annotations - they are handled separately and output raw would be wrong
+    const doc = (field.documentation || '').replace(
+      /\s*@Dto(All|Create|Update|Entity)?Custom\('[^']*',\s*'[^']*'\)\s*/g,
+      '',
+    );
+    if (doc.trim()) decorator += `${doc.trim()}\n`;
   }
 
   if (
@@ -82,12 +87,16 @@ export function makeImportsFromClassTransformer(
   // Create a Set to store unique function names
   const uniqueFunctions = new Set();
 
+  // Strip @Dto*Custom annotations before extracting - they use their own raw imports
+  const DTO_CUSTOM_PATTERN =
+    /\s*@Dto(All|Create|Update|Entity)?Custom\('[^']*',\s*'[^']*'\)\s*/g;
+
   hasCustomTransformer.forEach((input) => {
     let match;
-
-    if (input.documentation) {
-      // Find all matches in the current string
-      while ((match = regex.exec(input.documentation)) !== null) {
+    const doc = (input.documentation || '').replace(DTO_CUSTOM_PATTERN, '');
+    if (doc) {
+      regex.lastIndex = 0;
+      while ((match = regex.exec(doc)) !== null) {
         uniqueFunctions.add(match[1]); // Add to Set (automatically handles duplicates)
       }
     }

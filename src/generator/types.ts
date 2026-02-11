@@ -32,6 +32,14 @@ export interface ParsedField {
   relationFromFields?: readonly string[];
   relationToFields?: readonly string[];
   pureType?: boolean;
+  /** Custom decorator for Create DTO (e.g. '@Exclude()') */
+  customDecoratorCreate?: string;
+  /** Custom decorator for Update DTO */
+  customDecoratorUpdate?: string;
+  /** Custom decorator for Entity */
+  customDecoratorEntity?: string;
+  /** Custom decorator for plain DTO */
+  customDecoratorPlain?: string;
 }
 
 export interface ExtraModel {
@@ -41,7 +49,7 @@ export interface ExtraModel {
 }
 
 export interface ImportStatementParams {
-  from: string;
+  from?: string;
   /**
    * imports default export from `from`.
    * use `string` to just get the default export and `{'*': localName`} for all exports (e.g. `import * as localName from 'baz'`)
@@ -55,6 +63,8 @@ export interface ImportStatementParams {
    * @example `{exportedName: localName}`
    */
   destruct?: (string | Record<string, string>)[];
+  /** Raw import line - when set, output this string as-is */
+  raw?: string;
 }
 
 export interface DtoParams {

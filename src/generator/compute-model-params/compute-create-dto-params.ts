@@ -1,7 +1,9 @@
 import slash from 'slash';
 import path from 'node:path';
 import {
+  DTO_ALL_CUSTOM,
   DTO_API_HIDDEN,
+  DTO_CREATE_CUSTOM,
   DTO_CREATE_HIDDEN,
   DTO_CREATE_OPTIONAL,
   DTO_CREATE_VALIDATE_IF,
@@ -29,6 +31,7 @@ import {
   getRelativePath,
   makeImportsFromPrismaClient,
   mapDMMFToParsedField,
+  parseDtoCustomParams,
   zipImportStatementParams,
 } from '../helpers';
 import type { FieldOverrides } from '../helpers';
@@ -139,6 +142,24 @@ export const computeCreateDtoParams = ({
       overrides.isRequired = false;
     }
     overrides.isNullable = !field.isRequired;
+
+    const customCreate =
+      isAnnotatedWith(field, DTO_CREATE_CUSTOM) ||
+      isAnnotatedWith(field, DTO_ALL_CUSTOM);
+    if (customCreate) {
+      const params =
+        isAnnotatedWith(field, DTO_CREATE_CUSTOM, {
+          returnAnnotationParameters: true,
+        }) ||
+        isAnnotatedWith(field, DTO_ALL_CUSTOM, {
+          returnAnnotationParameters: true,
+        });
+      const parsed = typeof params === 'string' && parseDtoCustomParams(params);
+      if (parsed) {
+        overrides.customDecoratorCreate = parsed.decorator;
+        concatIntoArray([parsed.import], imports);
+      }
+    }
 
     if (isType(field)) {
       // don't try to import the class we're preparing params for

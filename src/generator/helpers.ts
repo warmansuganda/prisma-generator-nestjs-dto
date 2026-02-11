@@ -22,6 +22,22 @@ import { parseApiProperty } from './api-decorator';
 import { parseClassValidators } from './class-validator';
 import { DTO_CAST_TYPE } from './annotations';
 
+/**
+ * Parse @Dto*Custom annotation params: ('decorator', 'import ...')
+ * Returns { decorator, import: ImportStatementParams } or null
+ */
+export const parseDtoCustomParams = (
+  params: string,
+): { decorator: string; import: ImportStatementParams } | null => {
+  const match = params.match(/'([^']*)',\s*'([^']*)'/);
+  if (!match) return null;
+  const [, decorator, importStr] = match;
+  return {
+    decorator: decorator ?? '',
+    import: { raw: importStr?.trim().replace(/;?\s*$/, '') ?? '' },
+  };
+};
+
 export const uniq = <T = any>(input: T[]): T[] => Array.from(new Set(input));
 export const concatIntoArray = <T = any>(source: T[], target: T[]) =>
   source.forEach((item) => target.push(item));
@@ -662,17 +678,26 @@ export const mergeImportStatements = (
 export const zipImportStatementParams = (
   items: ImportStatementParams[],
 ): ImportStatementParams[] => {
-  const itemsByFrom = items.reduce(
+  const rawImports: ImportStatementParams[] = [];
+  const normalItems = items.filter((item) => {
+    if (item.raw) {
+      rawImports.push(item);
+      return false;
+    }
+    return true;
+  });
+
+  const itemsByFrom = normalItems.reduce(
     (result, item) => {
-      const { from } = item;
-      const { [from]: existingItem } = result;
+      const from = item.from ?? '';
+      const existingItem = result[from];
       if (!existingItem) {
         return { ...result, [from]: item };
       }
       return { ...result, [from]: mergeImportStatements(existingItem, item) };
     },
-    {} as Record<ImportStatementParams['from'], ImportStatementParams>,
+    {} as Record<string, ImportStatementParams>,
   );
 
-  return Object.values(itemsByFrom);
+  return [...Object.values(itemsByFrom), ...rawImports];
 };

@@ -1,6 +1,7 @@
 import path from 'node:path';
 import slash from 'slash';
 import {
+  DTO_ALL_CUSTOM,
   DTO_API_HIDDEN,
   DTO_RELATION_CAN_CONNECT_ON_UPDATE,
   DTO_RELATION_CAN_CREATE_ON_UPDATE,
@@ -8,6 +9,7 @@ import {
   DTO_RELATION_INCLUDE_ID,
   DTO_RELATION_MODIFIERS_ON_UPDATE,
   DTO_TYPE_FULL_UPDATE,
+  DTO_UPDATE_CUSTOM,
   DTO_UPDATE_HIDDEN,
   DTO_UPDATE_OPTIONAL,
   DTO_UPDATE_REQUIRED,
@@ -31,6 +33,7 @@ import {
   getRelativePath,
   makeImportsFromPrismaClient,
   mapDMMFToParsedField,
+  parseDtoCustomParams,
   zipImportStatementParams,
 } from '../helpers';
 import type { FieldOverrides } from '../helpers';
@@ -134,6 +137,24 @@ export const computeUpdateDtoParams = ({
 
     if (isAnnotatedWith(field, DTO_UPDATE_REQUIRED)) {
       overrides.isRequired = true;
+    }
+
+    const customUpdate =
+      isAnnotatedWith(field, DTO_UPDATE_CUSTOM) ||
+      isAnnotatedWith(field, DTO_ALL_CUSTOM);
+    if (customUpdate) {
+      const params =
+        isAnnotatedWith(field, DTO_UPDATE_CUSTOM, {
+          returnAnnotationParameters: true,
+        }) ||
+        isAnnotatedWith(field, DTO_ALL_CUSTOM, {
+          returnAnnotationParameters: true,
+        });
+      const parsed = typeof params === 'string' && parseDtoCustomParams(params);
+      if (parsed) {
+        overrides.customDecoratorUpdate = parsed.decorator;
+        concatIntoArray([parsed.import], imports);
+      }
     }
 
     if (isType(field)) {

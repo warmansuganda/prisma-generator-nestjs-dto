@@ -60,7 +60,8 @@ export const each = <T = any>(
 ) => arr.map(fn).join(joinWith);
 
 export const importStatement = (input: ImportStatementParams) => {
-  const { from, destruct = [], default: defaultExport } = input;
+  if (input.raw) return input.raw;
+  const { from = '', destruct = [], default: defaultExport } = input;
   const fragments = ['import'];
   if (defaultExport) {
     if (typeof defaultExport === 'string') {
@@ -207,13 +208,26 @@ export const makeHelpers = ({
     }${when(field.isList, '[]')}`;
   };
 
+  const getCustomDecorator = (
+    field: ParsedField,
+    dtoType: 'create' | 'update' | 'plain',
+  ): string => {
+    const d =
+      dtoType === 'create'
+        ? field.customDecoratorCreate
+        : dtoType === 'update'
+          ? field.customDecoratorUpdate
+          : field.customDecoratorPlain;
+    return d ? `${d}\n` : '';
+  };
+
   const fieldToDtoProp = (
     field: ParsedField,
     dtoType: 'create' | 'update' | 'plain',
     useInputTypes = false,
     forceOptional = false,
   ) =>
-    `${decorateApiProperty(field)}${decorateClassValidators(field)}${
+    `${getCustomDecorator(field, dtoType)}${decorateApiProperty(field)}${decorateClassValidators(field)}${
       field.name
     }${unless(
       field.isRequired && !forceOptional,
@@ -242,7 +256,7 @@ export const makeHelpers = ({
     )}`;
 
   const fieldToEntityProp = (field: ParsedField) =>
-    `${decorateApiProperty(field)}${decorateTransformer(field)}${field.name}${unless(
+    `${field.customDecoratorEntity ? field.customDecoratorEntity + '\n' : ''}${decorateApiProperty(field)}${decorateTransformer(field)}${field.name}${unless(
       field.isRequired,
       '?',
       when(definiteAssignmentAssertion, '!'),

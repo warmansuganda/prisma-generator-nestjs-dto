@@ -1,7 +1,9 @@
 import path from 'node:path';
 import slash from 'slash';
 import {
+  DTO_ALL_CUSTOM,
   DTO_API_HIDDEN,
+  DTO_ENTITY_CUSTOM,
   DTO_ENTITY_HIDDEN,
   DTO_RELATION_REQUIRED,
 } from '../annotations';
@@ -12,10 +14,12 @@ import {
   isType,
 } from '../field-classifiers';
 import {
+  concatIntoArray,
   getRelationScalars,
   getRelativePath,
   makeImportsFromPrismaClient,
   mapDMMFToParsedField,
+  parseDtoCustomParams,
   zipImportStatementParams,
 } from '../helpers';
 import type { FieldOverrides } from '../helpers';
@@ -59,6 +63,24 @@ export const computeEntityParams = ({
     const decorators: IDecorators = {};
 
     if (isAnnotatedWith(field, DTO_ENTITY_HIDDEN)) return result;
+
+    const customEntity =
+      isAnnotatedWith(field, DTO_ENTITY_CUSTOM) ||
+      isAnnotatedWith(field, DTO_ALL_CUSTOM);
+    if (customEntity) {
+      const params =
+        isAnnotatedWith(field, DTO_ENTITY_CUSTOM, {
+          returnAnnotationParameters: true,
+        }) ||
+        isAnnotatedWith(field, DTO_ALL_CUSTOM, {
+          returnAnnotationParameters: true,
+        });
+      const parsed = typeof params === 'string' && parseDtoCustomParams(params);
+      if (parsed) {
+        overrides.customDecoratorEntity = parsed.decorator;
+        concatIntoArray([parsed.import], imports);
+      }
+    }
 
     if (isType(field)) {
       // don't try to import the class we're preparing params for

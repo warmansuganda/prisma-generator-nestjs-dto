@@ -110,6 +110,7 @@ model Category {
   name      String
   createdAt DateTime
   /// @TransformerDateTime()
+  /// @DtoEntityCustom('@Ahay()', 'import { Ahay } from "ahay-package"')
   updatedAt DateTime  @updatedAt
   /// @DtoRelationCanCreateOnCreate
   /// @DtoRelationCanConnectOnUpdate

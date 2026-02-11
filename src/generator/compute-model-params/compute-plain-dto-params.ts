@@ -1,16 +1,20 @@
 import slash from 'slash';
 import path from 'node:path';
 import {
+  DTO_ALL_CUSTOM,
   DTO_API_HIDDEN,
+  DTO_CUSTOM,
   DTO_ENTITY_HIDDEN,
   DTO_RELATION_INCLUDE_ID,
 } from '../annotations';
 import { isAnnotatedWith, isRelation, isType } from '../field-classifiers';
 import {
+  concatIntoArray,
   getRelationScalars,
   getRelativePath,
   makeImportsFromPrismaClient,
   mapDMMFToParsedField,
+  parseDtoCustomParams,
   zipImportStatementParams,
 } from '../helpers';
 import type { FieldOverrides } from '../helpers';
@@ -54,6 +58,24 @@ export const computePlainDtoParams = ({
     const decorators: IDecorators = {};
 
     if (isAnnotatedWith(field, DTO_ENTITY_HIDDEN)) return result;
+
+    const customPlain =
+      isAnnotatedWith(field, DTO_CUSTOM) ||
+      isAnnotatedWith(field, DTO_ALL_CUSTOM);
+    if (customPlain) {
+      const params =
+        isAnnotatedWith(field, DTO_CUSTOM, {
+          returnAnnotationParameters: true,
+        }) ||
+        isAnnotatedWith(field, DTO_ALL_CUSTOM, {
+          returnAnnotationParameters: true,
+        });
+      const parsed = typeof params === 'string' && parseDtoCustomParams(params);
+      if (parsed) {
+        overrides.customDecoratorPlain = parsed.decorator;
+        concatIntoArray([parsed.import], imports);
+      }
+    }
 
     if (isRelation(field)) return result;
     if (
