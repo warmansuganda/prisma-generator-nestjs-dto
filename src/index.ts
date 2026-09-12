@@ -1,6 +1,5 @@
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import makeDir from 'make-dir';
 import slash from 'slash';
 import { generatorHandler } from '@prisma/generator-helper';
 import prettier from 'prettier';
@@ -254,7 +253,7 @@ export const generate = async (options: GeneratorOptions) => {
     results
       .concat(Object.values(indexCollections))
       .map(async ({ fileName, content }) => {
-        await makeDir(path.dirname(fileName));
+        await fs.mkdir(path.dirname(fileName), { recursive: true });
 
         if (applyPrettier) {
           content = await prettier.format(content, prettierConfig);

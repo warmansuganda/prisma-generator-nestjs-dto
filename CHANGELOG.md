@@ -5,6 +5,17 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](http://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](http://semver.org/).
 
+## [2.2.0] - 2026-09-12
+
+### Changed
+
+- Raise `engines.node` to `>=20` (Node 24 supported; CI matrix Node 20 + 24)
+- Remove unused runtime deps `prisma` and `@prisma/client` (keep as devDependencies; optional peer on `prisma`)
+- Bump `@prisma/generator-helper` to `^7.10.0`
+- Replace `make-dir` with `fs.mkdir({ recursive: true })`
+- Add `overrides.mysql2` for local Prisma generate audit hygiene
+- Clear remaining audit findings via overrides (`deepmerge-ts`, `minimatch`, `file-type`, Nest 11.2.3) and `@nestjs/swagger` ^11
+
 ## [1.23.1] - 2024-08-07
 
 ### Fixed

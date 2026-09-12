@@ -4,7 +4,7 @@ This guide covers how to build, test, and publish `@inofix/prisma-generator-nest
 
 ## Prerequisites
 
-- **Node.js** ≥ 14 (see `.nvmrc`)
+- **Node.js** ≥ 20 (see `.nvmrc`; CI covers Node 20 and 24)
 - **npm** account with publish access to the package scope
 - **npm login** completed (`npm whoami` should succeed)
 
@@ -79,13 +79,23 @@ To test the generator in another project before publishing:
 # In the generator repo
 npm run build
 npm pack
-# Creates prisma-generator-nestjs-dto-2.0.0.tgz
+# Creates inofix-prisma-generator-nestjs-dto-<version>.tgz
 
 # In your NestJS project
-npm install /path/to/prisma-generator-nestjs-dto/prisma-generator-nestjs-dto-2.0.0.tgz
+npm install /path/to/prisma-generator-nestjs-dto/inofix-prisma-generator-nestjs-dto-<version>.tgz
 ```
 
-Or use a relative path in `package.json`:
+Prefer the packed `.tgz` when checking the published dependency graph (a `file:` directory link also exposes the generator repo’s own `node_modules`). After publishing to npm with access to the `@inofix` scope:
+
+```json
+{
+  "devDependencies": {
+    "@inofix/prisma-generator-nestjs-dto": "^2.2.0"
+  }
+}
+```
+
+Until then, use a relative path in `package.json`:
 
 ```json
 {
@@ -119,7 +129,7 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '24'
           registry-url: 'https://registry.npmjs.org'
       - run: npm ci
       - run: npm run build
